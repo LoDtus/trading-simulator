@@ -1,10 +1,10 @@
 package com.trading_simulator.backend.controller;
 
 import com.trading_simulator.backend.common.enums.ScenarioStatus;
-import com.trading_simulator.backend.object.entity.Auth;
-import com.trading_simulator.backend.object.entity.Scenario;
-import com.trading_simulator.backend.service.entityservice.AuthService;
-import com.trading_simulator.backend.service.entityservice.ScenarioService;
+import com.trading_simulator.backend.domain.auth.Auth;
+import com.trading_simulator.backend.domain.scenario.Scenario;
+import com.trading_simulator.backend.domain.auth.AuthService;
+import com.trading_simulator.backend.domain.scenario.ScenarioService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

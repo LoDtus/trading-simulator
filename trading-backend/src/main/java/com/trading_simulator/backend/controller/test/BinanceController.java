@@ -1,6 +1,6 @@
 package com.trading_simulator.backend.controller.test;
 
-import com.trading_simulator.backend.service.externalservice.BinanceService;
+import com.trading_simulator.backend.externalservice.BinanceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

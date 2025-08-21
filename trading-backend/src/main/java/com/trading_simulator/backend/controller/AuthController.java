@@ -5,10 +5,10 @@ import com.trading_simulator.backend.object.dto.auth.ResetPasswordRequest;
 import com.trading_simulator.backend.object.dto.auth.SignInRequest;
 import com.trading_simulator.backend.object.dto.auth.SignUpRequest;
 import com.trading_simulator.backend.object.dto.user.UserInfo;
-import com.trading_simulator.backend.object.entity.Auth;
-import com.trading_simulator.backend.object.entity.Profile;
-import com.trading_simulator.backend.service.entityservice.AuthService;
-import com.trading_simulator.backend.service.entityservice.ProfileService;
+import com.trading_simulator.backend.domain.auth.Auth;
+import com.trading_simulator.backend.domain.user.User;
+import com.trading_simulator.backend.domain.auth.AuthService;
+import com.trading_simulator.backend.domain.user.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +23,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class AuthController {
     private final AuthService authService;
-    private final ProfileService profileService;
+    private final UserService userService;
 
     @GetMapping("/sign-up")
     public ResponseEntity<?> signUp(@Valid @RequestBody SignUpRequest request) {
@@ -43,13 +43,13 @@ public class AuthController {
                 .build();
         auth = authService.save(auth);
 
-        Profile profile = Profile.builder()
+        User user = User.builder()
                 .id(auth.getId())
                 .dateOfBirth(request.getDateOfBirth())
                 .address(List.of(request.getNation(), request.getCity()))
                 .createdAt(Instant.now())
                 .build();
-        profile = profileService.save(profile);
+        user = userService.save(user);
 
         return ResponseEntity.ok("");
     }
@@ -68,19 +68,19 @@ public class AuthController {
             return ResponseEntity.ok("");
         }
 
-        Profile profile = profileService.findById(auth.getId());
+        User user = userService.findById(auth.getId());
         UserInfo userInfo = UserInfo.builder()
                 .id(auth.getId())
                 .email(auth.getEmail())
                 .username(auth.getUsername())
                 .role(auth.getRole())
 
-                .image(profile.getImage())
+                .image(user.getImage())
                 .status(null)
-                .bio(profile.getBio())
-                .address(profile.getAddress())
-                .dateOfBirth(profile.getDateOfBirth())
-                .createdAt(profile.getCreatedAt())
+                .bio(user.getBio())
+                .address(user.getAddress())
+                .dateOfBirth(user.getDateOfBirth())
+                .createdAt(user.getCreatedAt())
 
                 .rank(null)
                 .build();

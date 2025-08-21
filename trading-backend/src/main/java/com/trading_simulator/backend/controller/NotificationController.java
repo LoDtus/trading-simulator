@@ -1,6 +1,5 @@
 package com.trading_simulator.backend.controller;
 
-import com.trading_simulator.backend.domain.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -8,29 +7,26 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/user")
+@RequestMapping("/api/notification")
 @RequiredArgsConstructor
-public class UserController {
-    private final UserService userService;
-
+public class NotificationController {
     @PostMapping("/get")
-    public ResponseEntity<?> getUsers() {
+    public ResponseEntity<?> getNotifications() {
+        return ResponseEntity.ok("");
+    }
+
+    @PostMapping("/add")
+    public ResponseEntity<?> addNotifications() {
         return ResponseEntity.ok("");
     }
 
     @PutMapping("/update")
-    public ResponseEntity<?> updateUser() {
-
-
+    public ResponseEntity<?> updateNotification() {
         return ResponseEntity.ok("");
     }
 
     @PutMapping("/delete")
-    public ResponseEntity<?> deleteUsers(@RequestParam List<String> ids) {
-        for (String id : ids) {
-
-        }
-
+    public ResponseEntity<?> deleteNotifications(@RequestParam List<String> ids) {
         return ResponseEntity.ok("");
     }
 }

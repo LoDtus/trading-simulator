@@ -1,6 +1,6 @@
 package com.trading_simulator.backend.controller;
 
-import com.trading_simulator.backend.service.entityservice.RankService;
+import com.trading_simulator.backend.domain.rank.RankService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
