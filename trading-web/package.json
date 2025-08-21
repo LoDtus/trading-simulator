@@ -1,0 +1,38 @@
+{
+    "name": "trading-web",
+    "private": true,
+    "version": "0.0.0",
+    "type": "module",
+    "scripts": {
+        "dev": "vite",
+        "build": "vue-tsc -b && vite build",
+        "preview": "vite preview"
+    },
+    "dependencies": {
+        "@fortawesome/fontawesome-svg-core": "^7.0.0",
+        "@fortawesome/free-brands-svg-icons": "^7.0.0",
+        "@fortawesome/free-regular-svg-icons": "^7.0.0",
+        "@fortawesome/free-solid-svg-icons": "^7.0.0",
+        "@fortawesome/vue-fontawesome": "^3.1.1",
+        "@tailwindcss/vite": "^4.1.11",
+        "ant-design-vue": "^4.2.6",
+        "axios": "^1.11.0",
+        "date-fns": "^4.1.0",
+        "js-cookie": "^3.0.5",
+        "pinia": "^3.0.3",
+        "pinia-plugin-persistedstate": "^4.5.0",
+        "swiper": "^11.2.10",
+        "tailwindcss": "^4.1.11",
+        "vue": "^3.5.18",
+        "vue-router": "^4.5.1"
+    },
+    "devDependencies": {
+        "@types/js-cookie": "^3.0.6",
+        "@types/node": "^24.3.0",
+        "@vitejs/plugin-vue": "^6.0.1",
+        "@vue/tsconfig": "^0.7.0",
+        "typescript": "~5.8.3",
+        "vite": "^7.1.2",
+        "vue-tsc": "^3.0.5"
+    }
+}

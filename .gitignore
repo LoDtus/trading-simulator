@@ -1,0 +1,86 @@
+# === GLOBAL ===
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
+*.swp
+*.swo
+*.bak
+*.txt
+*.orig
+*.pem
+*.class
+*.jar
+*.war
+*.ear
+*.iml
+*.ipr
+*.iws
+.idea/
+.vscode/
+!.vscode/extensions.json
+*.tsbuildinfo
+
+# Env & config
+.env
+.env.*
+.env.local
+.env.*.local
+env.properties
+application*.yml
+application*.properties
+package-lock.json
+
+# === LOGS ===
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+*.eslintcache
+coverage/
+
+# =========================
+# FRONTEND (Vue + Vite)
+# =========================
+trading-web/node_modules/
+trading-web/dist/
+trading-web/dist-ssr/
+trading-web/.vite/
+trading-web/.cache/
+trading-web/.pnp*/
+!trading-web/.env.example
+trading-web/cypress/videos/
+trading-web/cypress/screenshots/
+
+# =========================
+# BACKEND (Spring Boot Maven)
+# =========================
+trading-backend/**/target/
+trading-backend/**/build/
+trading-backend/**/.mvn/
+trading-backend/**/.classpath
+trading-backend/**/.project
+trading-backend/**/.settings/
+trading-backend/**/.idea/
+trading-backend/**/.vscode/
+trading-backend/**/*.iml
+trading-backend/**/*.ipr
+trading-backend/**/*.iws
+trading-backend/**/.springBeans
+trading-backend/**/.sts4-cache
+trading-backend/**/.apt_generated
+trading-backend/**/nbproject/
+trading-backend/**/nbbuild/
+trading-backend/**/nbdist/
+trading-backend/**/dist/
+trading-backend/**/.nb-gradle/
+trading-backend/**/.env
+trading-backend/**/.env.*
+trading-backend/**/env.properties
+
+# === Exceptions: giữ build/target trong source dir khi cần debug
+!**/src/main/**/target/
+!**/src/test/**/target/
+!**/src/main/**/build/
+!**/src/test/**/build/

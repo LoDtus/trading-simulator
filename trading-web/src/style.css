@@ -1,0 +1,33 @@
+@import "tailwindcss";
+
+@theme {
+    --color-smoky-black: #11120d;
+    --color-soft-black: #383838;
+    --color-dark-area: #1f1f21;
+
+    --color-gray: #989898;
+    --color-gray-line: #302f32;
+    --color-gray-hover: #373639;
+    --color-soft-gray-hover: #28282a;
+    --color-soft-gray: #868588;
+
+    --color-candlestick-red: #f6465d;
+    --color-candlestick-green: #2ebd85;
+}
+
+h1, h2, h3, h4, h5 {
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+
+button {
+    cursor: pointer;
+}
+
+ul {
+    margin: 0;
+}
+
+.border {
+    border-color: white;
+}
