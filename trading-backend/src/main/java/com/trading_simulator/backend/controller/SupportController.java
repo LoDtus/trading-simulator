@@ -1,5 +1,6 @@
 package com.trading_simulator.backend.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -9,6 +10,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/support")
 @RequiredArgsConstructor
+@Tag(name = "Support", description = "Các API tương tác với chức năng hỗ trợ người dùng")
 public class SupportController {
 
     @PostMapping("/get-topics")

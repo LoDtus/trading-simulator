@@ -5,6 +5,7 @@ import com.trading_simulator.backend.domain.auth.Auth;
 import com.trading_simulator.backend.domain.scenario.Scenario;
 import com.trading_simulator.backend.domain.auth.AuthService;
 import com.trading_simulator.backend.domain.scenario.ScenarioService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +16,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/scenario")
 @RequiredArgsConstructor
+@Tag(name = "Scenario", description = "Các API tương tác với kịch bản giao dịch")
 public class ScenarioController {
     private final AuthService authService;
     private final ScenarioService scenarioService;

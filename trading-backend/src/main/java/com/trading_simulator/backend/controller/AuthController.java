@@ -9,6 +9,13 @@ import com.trading_simulator.backend.domain.auth.Auth;
 import com.trading_simulator.backend.domain.user.User;
 import com.trading_simulator.backend.domain.auth.AuthService;
 import com.trading_simulator.backend.domain.user.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -21,10 +28,20 @@ import java.util.Objects;
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
+@Tag(name = "Auth", description = "Các API xác thực tài khoản người dùng")
 public class AuthController {
     private final AuthService authService;
     private final UserService userService;
 
+    @Operation(
+            summary = "Đăng ký tài khoản",
+            description = "Đăng ký và tạo mới tài khoản cho người dùng"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Thành công"),
+            @ApiResponse(responseCode = "404", description = "Email đã tồn tại"),
+            @ApiResponse(responseCode = "404", description = "Tên đăng nhập đã tồn tại")
+    })
     @GetMapping("/sign-up")
     public ResponseEntity<?> signUp(@Valid @RequestBody SignUpRequest request) {
         if (authService.existsByEmailOrUsername(request.getEmail())

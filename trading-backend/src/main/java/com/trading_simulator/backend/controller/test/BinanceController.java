@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/binance")
+@RequestMapping("/test/binance")
 public class BinanceController {
     private final BinanceService binanceService;
 

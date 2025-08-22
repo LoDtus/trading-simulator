@@ -11,25 +11,17 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.provisioning.JdbcUserDetailsManager;
-import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-import javax.sql.DataSource;
 import java.util.List;
 
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
-//    private final JwtAuthenticationFilter jwtAuthenticationFilter;
-//    private final AuthenticationProvider authenticationProvider;
-
     @Value("${VUE_URL}")
     private String VUE_URL;
 
@@ -38,7 +30,7 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
 
         configuration.setAllowedOrigins(List.of(VUE_URL));
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowCredentials(true);
 
         configuration.setAllowedHeaders(List.of("*"));
@@ -51,21 +43,6 @@ public class SecurityConfig {
     }
 
     @Bean
-    // Bỏ cái này, chuyển sang dùng cái khác vì cái này không áp dụng với mongo
-    public UserDetailsManager userDetailsManager(DataSource dataSource) {
-        JdbcUserDetailsManager jdbcUserDetailsManager = new JdbcUserDetailsManager(dataSource);
-        jdbcUserDetailsManager.setUsersByUsernameQuery(
-                "select email, password, active from auth where email = ?"
-        );
-        jdbcUserDetailsManager.setAuthoritiesByUsernameQuery(
-                "select auth.email, role.id " +
-                        "from auth join role on auth.role = role.id " +
-                        "where auth.email = ?"
-        );
-        return jdbcUserDetailsManager;
-    }
-
-    @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.exceptionHandling(c -> c.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)));
 
@@ -73,18 +50,16 @@ public class SecurityConfig {
         http.cors(c -> c.configurationSource(corsConfigurationSource()));
         http.sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
-//        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-//        http.authenticationProvider(authenticationProvider);
+//        http.authorizeHttpRequests(configure -> configure
+//                .requestMatchers("/ws/**").permitAll()
+//
+//                .requestMatchers(HttpMethod.GET, "/files/**").permitAll()
+//                .requestMatchers(HttpMethod.POST, "/files/**").permitAll()
+//                .requestMatchers(HttpMethod.PUT, "/files/**").permitAll()
+//                .requestMatchers(HttpMethod.DELETE, "/files/**").permitAll()
+//        );
 
-        http.authorizeHttpRequests(configure -> configure
-                .requestMatchers("/ws/**").permitAll()
-
-                .requestMatchers(HttpMethod.GET, "/**").permitAll()
-                .requestMatchers(HttpMethod.POST, "/**").permitAll()
-                .requestMatchers(HttpMethod.PUT, "/**").permitAll()
-                .requestMatchers(HttpMethod.DELETE, "/**").permitAll()
-                // Sử dụng dữ liệu trong ApiPermission
-        );
+        http.authorizeHttpRequests(configure -> configure.anyRequest().permitAll());
         http.headers(headers -> headers
                 .frameOptions(HeadersConfigurer.FrameOptionsConfig::disable)
                 .httpStrictTransportSecurity(HeadersConfigurer.HstsConfig::disable)
