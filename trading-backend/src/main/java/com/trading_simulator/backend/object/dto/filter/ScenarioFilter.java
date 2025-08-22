@@ -7,7 +7,9 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class RankFilter {
+public class ScenarioFilter {
     private String id;
-    private String rank;
+
+
+    private String keyword;
 }

@@ -7,7 +7,9 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class RankFilter {
+public class SupportQAFilter {
     private String id;
-    private String rank;
+    private String topic; // id
+
+    private String keyword;
 }
