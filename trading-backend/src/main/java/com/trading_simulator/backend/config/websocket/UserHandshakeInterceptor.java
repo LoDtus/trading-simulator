@@ -14,17 +14,31 @@ public class UserHandshakeInterceptor implements HandshakeInterceptor {
                                    WebSocketHandler wsHandler,
                                    Map<String, Object> attributes
     ) throws Exception {
+//        if (request instanceof ServletServerHttpRequest servletRequest) {
+//            String userId = servletRequest.getServletRequest().getParameter("user");
+//            if (userId != null && !userId.isEmpty()) {
+//                attributes.put("userId", userId);
+//                System.out.println(">>> WebSocket Handshake OK. userId=" + userId);
+//            } else {
+//                System.out.println(">>> WebSocket Handshake FAILED. No userId found.");
+//                return false;
+//            }
+//        }
+//        return true; // cho phép handshake tiếp tục
+
         if (request instanceof ServletServerHttpRequest servletRequest) {
             String userId = servletRequest.getServletRequest().getParameter("user");
+            String sessionId = request.getHeaders().getFirst("sec-websocket-key");
             if (userId != null && !userId.isEmpty()) {
                 attributes.put("userId", userId);
-                System.out.println(">>> WebSocket Handshake OK. userId=" + userId);
+                System.out.println(">>> WebSocket Handshake OK. userId=" + userId + ", sessionId=" + sessionId);
+                return true;
             } else {
-                System.out.println(">>> WebSocket Handshake FAILED. No userId found.");
+                System.out.println(">>> WebSocket Handshake FAILED. No userId found, sessionId=" + sessionId);
                 return false;
             }
         }
-        return true; // cho phép handshake tiếp tục
+        return false;
     }
 
     @Override
@@ -33,6 +47,8 @@ public class UserHandshakeInterceptor implements HandshakeInterceptor {
                                WebSocketHandler wsHandler,
                                Exception exception
     ) {
-
+        if (exception != null) {
+            System.out.println(">>> WebSocket Handshake error: " + exception.getMessage());
+        }
     }
 }

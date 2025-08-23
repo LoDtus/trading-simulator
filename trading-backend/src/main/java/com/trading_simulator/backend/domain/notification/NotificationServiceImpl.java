@@ -9,6 +9,11 @@ public class NotificationServiceImpl implements NotificationService {
     private final NotificationRepository notificationRepository;
 
     @Override
+    public Notification findById(String id) {
+        return notificationRepository.findById(id).orElse(null);
+    }
+
+    @Override
     public Notification save(Notification notification) {
         return notificationRepository.save(notification);
     }

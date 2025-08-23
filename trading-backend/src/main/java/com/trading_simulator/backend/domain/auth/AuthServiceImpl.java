@@ -31,10 +31,18 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public Boolean existsByEmailOrUsername(String emailOrUsername) {
-        Boolean existsByEmail = authRepository.existsByEmail(emailOrUsername);
-        Boolean existsByUsername = authRepository.existsByUsername(emailOrUsername);
-        return existsByEmail || existsByUsername;
+    public Auth findByEmailOrUsername(String emailOrUsername) {
+        return authRepository.findByEmailOrUsername(emailOrUsername).orElse(null);
+    }
+
+    @Override
+    public Boolean existsByEmail(String email) {
+        return authRepository.existsByEmail(email);
+    }
+
+    @Override
+    public Boolean existsByUsername(String username) {
+        return authRepository.existsByUsername(username);
     }
 
     @Override

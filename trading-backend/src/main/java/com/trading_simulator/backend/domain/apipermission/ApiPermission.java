@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
@@ -16,6 +17,8 @@ import java.util.List;
 public class ApiPermission {
     @Id
     private String id;
+
+    @Indexed(unique = true)
     private String pattern;
     private String method;
     private List<RoleConfig> roles;

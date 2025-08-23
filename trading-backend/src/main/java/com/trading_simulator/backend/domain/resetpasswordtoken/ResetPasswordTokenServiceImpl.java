@@ -9,6 +9,11 @@ public class ResetPasswordTokenServiceImpl implements ResetPasswordTokenService 
     private final ResetPasswordTokenRepository resetPasswordTokenRepository;
 
     @Override
+    public ResetPasswordToken findByToken(String token) {
+        return resetPasswordTokenRepository.findById(token).orElse(null);
+    }
+
+    @Override
     public ResetPasswordToken save(ResetPasswordToken token) {
         return resetPasswordTokenRepository.save(token);
     }

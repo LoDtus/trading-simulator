@@ -1,7 +1,7 @@
 package com.trading_simulator.backend.object.dto.user;
 
-import com.trading_simulator.backend.common.enums.RoleDb;
 import com.trading_simulator.backend.domain.rank.Rank;
+import com.trading_simulator.backend.domain.role.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,7 +18,7 @@ public class UserInfo {
     private String id;
     private String email;
     private String username;
-    private RoleDb role;
+    private Role role;
 
     private String image;
     private Instant status;

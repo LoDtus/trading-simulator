@@ -7,7 +7,9 @@ public interface AuthService {
     Auth findById(String id);
     Auth findByEmail(String email);
     Auth findByUsername(String username);
-    Boolean existsByEmailOrUsername(String emailOrUsername);
+    Auth findByEmailOrUsername(String emailOrUsername);
+    Boolean existsByEmail(String email);
+    Boolean existsByUsername(String username);
     Auth save(Auth auth);
     Boolean deleteById(String id);
 }

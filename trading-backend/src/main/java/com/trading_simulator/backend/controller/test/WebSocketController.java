@@ -18,10 +18,15 @@ public class WebSocketController {
         String message = "Test Single";
         System.out.println("Data Single: " + testData.getContent());
 
+        SimpMessageHeaderAccessor headerAccessor = SimpMessageHeaderAccessor.create(SimpMessageType.MESSAGE);
+        headerAccessor.setSessionId("user-123");
+        headerAccessor.setLeaveMutable(true);
+
         messagingTemplate.convertAndSendToUser(
                 "user-123",
                 "/test",
-                message
+                message,
+                headerAccessor.getMessageHeaders()
         );
         return true;
     }

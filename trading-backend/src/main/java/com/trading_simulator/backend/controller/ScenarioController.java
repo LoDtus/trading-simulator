@@ -21,8 +21,8 @@ public class ScenarioController {
     private final AuthService authService;
     private final ScenarioService scenarioService;
 
-    @PostMapping("/create")
-    public ResponseEntity<?> createScenario(@RequestBody Scenario newScenario) {
+    @PostMapping("/add")
+    public ResponseEntity<?> addScenario(@RequestBody Scenario newScenario) {
         // chuyển sang việc xác định null tại entity thay vì check đi, check lại tại controller
         if (newScenario.getOwner() == null || newScenario.getOwner().isBlank()) {
 

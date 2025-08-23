@@ -18,6 +18,7 @@ import java.util.List;
 @Configuration
 @EnableWebSocketMessageBroker
 @RequiredArgsConstructor
+// Đang gặp lỗi tại send-single, không gửi được do kết nối chập chờn giữa client - server → session thay đổi liên tục
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Value("${POSTMAN_URL}")
     private String POSTMAN_URL;
@@ -29,6 +30,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void configureMessageBroker(MessageBrokerRegistry registry) {
         registry.setApplicationDestinationPrefixes("/app");
         registry.enableSimpleBroker("/public");
+//                .setHeartbeatValue(new long[]{10000, 10000});
         registry.setUserDestinationPrefix("/private");
     }
 
@@ -39,6 +41,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                 .addInterceptors(new UserHandshakeInterceptor())
                 .setAllowedOriginPatterns(POSTMAN_URL, VUE_URL)
                 .withSockJS();
+//                .setHeartbeatTime(10000);
     }
 
     @Override

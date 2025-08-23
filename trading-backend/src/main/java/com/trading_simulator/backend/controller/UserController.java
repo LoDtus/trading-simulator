@@ -70,15 +70,37 @@ public class UserController {
             HttpServletRequest request,
             @ModelAttribute UpdateUserRequest updateUserRequest
     ) {
-        String id = ""; // get from request
-        if (!id.equals(updateUserRequest.getId())) {
-            Auth auth = authService.findById(id);
+//        String id = ""; // get from request
+//        if (!id.equals(updateUserRequest.getId())) {
+//            Auth auth = authService.findById(id);
+//
+//            // nếu id người gửi khác id trong update thì chỉ có admin được phép cập nhật thôi
+////            if (!auth.getRole().equals("ROLE_ADMIN")) {
+////                return ResponseEntity.ok("");
+////            }
+//        }
 
-            // nếu id người gửi khác id trong update thì chỉ có admin được phép cập nhật thôi
-//            if (!auth.getRole().equals("ROLE_ADMIN")) {
-//                return ResponseEntity.ok("");
-//            }
+        Auth auth = authService.findById(updateUserRequest.getId());
+        if (auth == null) {
+            return ResponseEntity.ok("");
         }
+        if (!auth.getEmail().trim().equals(updateUserRequest.getEmail())
+                && authService.existsByEmail(updateUserRequest.getEmail())
+        ) {
+            return ResponseEntity.ok("");
+        }
+        if (!auth.getUsername().trim().equals(updateUserRequest.getUsername())
+                && authService.existsByUsername(updateUserRequest.getUsername())
+        ) {
+            return ResponseEntity.ok("");
+        }
+
+
+        //
+        // lọc ký tự khỏi bio, address, password, username
+        // date of birth không được quá thời điểm hiện tại
+
+
 
         return ResponseEntity.ok("");
     }
