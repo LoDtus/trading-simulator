@@ -1,5 +1,6 @@
 package com.trading_simulator.backend.config;
 
+import com.trading_simulator.backend.domain.auth.AuthRepository;
 import com.trading_simulator.backend.domain.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -16,13 +17,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Configuration
 @RequiredArgsConstructor
 public class ApplicationConfig {
-    private final UserRepository userRepository;
+    private final AuthRepository authRepository;
 
     @Bean
     public UserDetailsService userDetailsService() {
-//        return email -> userRepository.findByEmail(email)
-//                .orElseThrow(() -> new UsernameNotFoundException("Email not found"));
-        return null;
+        return emailOrUsername -> authRepository.findByEmailOrUsername(emailOrUsername)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + emailOrUsername));
     }
 
     @Bean

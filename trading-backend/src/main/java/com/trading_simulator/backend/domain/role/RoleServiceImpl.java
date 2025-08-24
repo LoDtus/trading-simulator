@@ -1,5 +1,6 @@
 package com.trading_simulator.backend.domain.role;
 
+import com.trading_simulator.backend.config.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -11,29 +12,22 @@ public class RoleServiceImpl implements RoleService {
     private final RoleRepository roleRepository;
 
     @Override
-    public List<Role> findAll() {
-        return roleRepository.findAll();
+    public List<Role> getRoles() {
+        return List.of();
     }
 
     @Override
-    public Role findById(String id) {
-        return roleRepository.findById(id).orElse(null);
+    public Role addRole() {
+        return null;
     }
 
     @Override
-    public Role findByRole(String role) {
-        return roleRepository.findByRole(role).orElse(null);
+    public Role updateRole() {
+        return null;
     }
 
     @Override
-    public Role save(Role role) {
-        return roleRepository.save(role);
-    }
+    public void deleteRole() {
 
-    @Override
-    public Boolean deleteById(String id) {
-        if (!roleRepository.existsById(id)) return false;
-        roleRepository.deleteById(id);
-        return true;
     }
 }

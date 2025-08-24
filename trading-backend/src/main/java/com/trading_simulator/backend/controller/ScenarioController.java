@@ -24,33 +24,23 @@ public class ScenarioController {
     @PostMapping("/add")
     public ResponseEntity<?> addScenario(@RequestBody Scenario newScenario) {
         // chuyển sang việc xác định null tại entity thay vì check đi, check lại tại controller
-        if (newScenario.getOwner() == null || newScenario.getOwner().isBlank()) {
-
-        }
-
-        Auth auth = authService.findById(newScenario.getOwner());
-        if (auth == null) {
-
-        }
-
-        newScenario = newScenario.toBuilder()
-                .id(null)
-                .name(newScenario.getName().isBlank() ? "Untitled Scenario" : newScenario.getName())
-                .createdAt(Instant.now())
-                .updatedAt(Instant.now())
-                .status(ScenarioStatus.ACTIVE)
-                .build();
-        newScenario = scenarioService.save(newScenario);
+//        if (newScenario.getOwner() == null || newScenario.getOwner().isBlank()) {
+//
+//        }
+//
+//        newScenario = newScenario.toBuilder()
+//                .id(null)
+//                .name(newScenario.getName().isBlank() ? "Untitled Scenario" : newScenario.getName())
+//                .createdAt(Instant.now())
+//                .updatedAt(Instant.now())
+//                .status(ScenarioStatus.ACTIVE)
+//                .build();
+//        newScenario = scenarioService.save(newScenario);
         return ResponseEntity.ok(newScenario);
     }
 
     @PutMapping("/update")
     public ResponseEntity<?> updateScenario(@RequestBody Scenario newScenario) {
-
-        newScenario = newScenario.toBuilder()
-                .updatedAt(Instant.now())
-                .build();
-        newScenario = scenarioService.save(newScenario);
         return ResponseEntity.ok(newScenario);
     }
 

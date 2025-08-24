@@ -1,5 +1,6 @@
 package com.trading_simulator.backend.domain.scenario;
 
+import com.trading_simulator.backend.config.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -11,19 +12,22 @@ public class ScenarioServiceImpl implements ScenarioService {
     private final ScenarioRepository scenarioRepository;
 
     @Override
-    public List<Scenario> find() {
+    public List<Scenario> getScenarios() {
         return List.of();
     }
 
     @Override
-    public Scenario save(Scenario scenario) {
-        return scenarioRepository.save(scenario);
+    public Scenario addScenario() {
+        return null;
     }
 
     @Override
-    public Boolean deleteById(String id) {
-        if (!scenarioRepository.existsById(id)) return false;
-        scenarioRepository.deleteById(id);
-        return true;
+    public Scenario updateScenario() {
+        return null;
+    }
+
+    @Override
+    public void deleteScenarios() {
+
     }
 }

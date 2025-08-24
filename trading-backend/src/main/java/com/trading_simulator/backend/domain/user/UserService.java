@@ -1,7 +1,9 @@
 package com.trading_simulator.backend.domain.user;
 
+import java.util.List;
+
 public interface UserService {
-    User findById(String id);
-    User save(User user);
-    Boolean deleteById(String id);
+    void getUsers();
+    void updateUser();
+    void deleteUsers(List<String> ids);
 }

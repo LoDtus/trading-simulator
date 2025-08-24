@@ -36,20 +36,20 @@ public class RoleController {
     public ResponseEntity<?> addRole(
             @RequestBody Role role
     ) {
-        if (roleService.findByRole(role.getRole().trim()) == null) {
-            return ResponseEntity.ok("");
-        }
-
-        // Lọc ký tự đặc biệt
-
-        role = role.toBuilder()
-                .id(null)
-                .role(role.getRole().trim())
-                .description(role.getDescription().trim())
-                .createdAt(Instant.now())
-                .updatedAt(Instant.now())
-                .build();
-        role = roleService.save(role);
+//        if (roleService.findByRole(role.getRole().trim()) == null) {
+//            return ResponseEntity.ok("");
+//        }
+//
+//        // Lọc ký tự đặc biệt
+//
+//        role = role.toBuilder()
+//                .id(null)
+//                .role(role.getRole().trim())
+//                .description(role.getDescription().trim())
+//                .createdAt(Instant.now())
+//                .updatedAt(Instant.now())
+//                .build();
+//        role = roleService.save(role);
 
         return ResponseEntity.ok("");
     }
@@ -63,8 +63,6 @@ public class RoleController {
             @RequestBody Role role
     ) {
         // Tìm kiếm và cập nhật
-
-        role = roleService.save(role);
         return ResponseEntity.ok("");
     }
 

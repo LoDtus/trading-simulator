@@ -33,22 +33,18 @@ import java.util.*;
 @RequiredArgsConstructor
 public class JwtServiceImpl implements JwtService {
     @Value("${SECRET_KEY}")
-    private String key;
+    private String SECRET_KEY;
 
     @Value("${ACCESS_TOKEN_EXPIRATION}")
-    private Long accessTokenExpiration;
+    private Long ACCESS_TOKEN_EXPIRATION;
 
     @Value("${REFRESH_TOKEN_EXPIRATION}")
-    private Long refreshTokenExpiration;
+    private Long REFRESH_TOKEN_EXPIRATION;
 
-    @Value("${RESET_PASSWORD_TOKEN_EXPIRATION}")
-    private Long resetPasswordTokenExpiration;
-
-    private final AuthService authService;
     private final UserDetailsService userDetailsService;
 
     private Key getSignInKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(key);
+        byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
@@ -143,7 +139,7 @@ public class JwtServiceImpl implements JwtService {
                 .setClaims(claims)
                 .setSubject(auth.getEmail()) // tạo subject, giúp server nhận ra user nhanh chóng mà không phải scan tìm lại
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + accessTokenExpiration))
+                .setExpiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_EXPIRATION))
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -161,23 +157,7 @@ public class JwtServiceImpl implements JwtService {
                 .setClaims(claims)
                 .setSubject(auth.getEmail())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + refreshTokenExpiration))
-                .signWith(getSignInKey(), SignatureAlgorithm.HS256)
-                .compact();
-    }
-
-    @Override
-    public String generateResetPasswordToken(Auth auth) {
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("id", auth.getId());
-        claims.put("email", auth.getEmail());
-        claims.put("username", auth.getUsername());
-
-        return Jwts.builder()
-                .setClaims(claims)
-                .setSubject(auth.getEmail())
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + resetPasswordTokenExpiration))
+                .setExpiration(new Date(System.currentTimeMillis() + REFRESH_TOKEN_EXPIRATION))
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -211,7 +191,7 @@ public class JwtServiceImpl implements JwtService {
                 .path("/")
                 .sameSite("Lax")
                 .secure(false)
-                .maxAge(rememberMe ? (int) (getAccessTokenExpiration() / 1000) : -1)
+                .maxAge(rememberMe ? (int) (ACCESS_TOKEN_EXPIRATION / 1000) : -1)
                 .build();
         response.addHeader("Set-Cookie", accessTokenCookie.toString());
         System.out.println("Set access cookie");
@@ -222,7 +202,7 @@ public class JwtServiceImpl implements JwtService {
                     .path("/")
                     .sameSite("Lax")
                     .secure(false)
-                    .maxAge(rememberMe ? (int) (getRefreshTokenExpiration() / 1000) : -1)
+                    .maxAge(rememberMe ? (int) (REFRESH_TOKEN_EXPIRATION / 1000) : -1)
                     .build();
             response.addHeader("Set-Cookie", refreshTokenCookie.toString());
             System.out.println("Set refresh cookie");
@@ -233,7 +213,7 @@ public class JwtServiceImpl implements JwtService {
                 .path("/")
                 .sameSite("Lax")
                 .secure(false)
-                .maxAge(rememberMe ? (int) (getRefreshTokenExpiration() / 1000) : -1)
+                .maxAge(rememberMe ? (int) (REFRESH_TOKEN_EXPIRATION / 1000) : -1)
                 .build();
         response.addHeader("Set-Cookie", rememberMeCookie.toString());
         System.out.println("Set remember me cookie");

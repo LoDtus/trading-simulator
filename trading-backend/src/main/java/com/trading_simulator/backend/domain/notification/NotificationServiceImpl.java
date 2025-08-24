@@ -1,7 +1,10 @@
 package com.trading_simulator.backend.domain.notification;
 
+import com.trading_simulator.backend.config.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -9,17 +12,17 @@ public class NotificationServiceImpl implements NotificationService {
     private final NotificationRepository notificationRepository;
 
     @Override
-    public Notification findById(String id) {
-        return notificationRepository.findById(id).orElse(null);
+    public List<Notification> getNotifications() {
+        return List.of();
     }
 
     @Override
-    public Notification save(Notification notification) {
-        return notificationRepository.save(notification);
-    }
-
-    @Override
-    public Boolean deleteById(String id) {
+    public Notification readNotification() {
         return null;
+    }
+
+    @Override
+    public void deleteNotification(List<String> ids) {
+
     }
 }

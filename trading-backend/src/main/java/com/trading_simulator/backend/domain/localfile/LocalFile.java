@@ -21,6 +21,6 @@ public class LocalFile {
     private String owner;
     private String name;
     private String url;
-    private String size;
+    private Long size;
     private Instant createdAt;
 }

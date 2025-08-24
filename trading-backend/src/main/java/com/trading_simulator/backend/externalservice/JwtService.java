@@ -17,7 +17,6 @@ public interface JwtService {
 
     String generateAccessToken(Auth auth);
     String generateRefreshToken(Auth auth);
-    String generateResetPasswordToken(Auth auth);
 
     UserDetails refreshAccessToken(HttpServletRequest request, HttpServletResponse response, String refreshToken);
     void setTokensToCookies(String accessToken, String refreshToken, Boolean rememberMe, HttpServletResponse response);

@@ -2,7 +2,9 @@ package com.trading_simulator.backend.common.util;
 
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.mongodb.repository.MongoRepository;
 
+import java.util.UUID;
 import java.util.regex.Pattern;
 
 @NoArgsConstructor
@@ -20,5 +22,13 @@ public class CommonUtil {
     public Boolean isValidPhoneNumber(String phoneNumber) {
         if (phoneNumber == null) return false;
         return PHONE_PATTERN.matcher(phoneNumber).matches();
+    }
+
+    public static <T, ID> String generateUniqueUUID(MongoRepository<T, String> repository) {
+        String uuid;
+        do {
+            uuid = UUID.randomUUID().toString();
+        } while (repository.existsById(uuid));
+        return uuid;
     }
 }

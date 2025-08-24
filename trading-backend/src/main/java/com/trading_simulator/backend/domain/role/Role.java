@@ -1,6 +1,7 @@
 package com.trading_simulator.backend.domain.role;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -26,6 +27,9 @@ public class Role {
 
     private String description;
 
+    @NotNull
     private Instant createdAt;
+
+    @NotNull
     private Instant updatedAt;
 }

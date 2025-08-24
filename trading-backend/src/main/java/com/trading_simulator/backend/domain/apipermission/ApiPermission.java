@@ -1,6 +1,5 @@
 package com.trading_simulator.backend.domain.apipermission;
 
-import com.trading_simulator.backend.common.enums.RoleConfig;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,7 +20,7 @@ public class ApiPermission {
     @Indexed(unique = true)
     private String pattern;
     private String method;
-    private List<RoleConfig> roles;
+    private List<String> roleIds;
     private String description;
     private Boolean enabled;
 }

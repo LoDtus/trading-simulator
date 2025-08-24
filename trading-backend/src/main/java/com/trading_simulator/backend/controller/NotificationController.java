@@ -34,22 +34,22 @@ public class NotificationController {
             HttpServletRequest request,
             @RequestBody SeenNotificationList notificationList
     ) {
-        String userId = "";
-        if (notificationList.getAll()) {
-
-        }
-
-        List<String> deletedNotification = new ArrayList<>(List.of());
-        for (String id : notificationList.getIds()) {
-            Notification notification = notificationService.findById(id);
-            if (notification == null) {
-                deletedNotification.add(id);
-            }
-            notification = notification.toBuilder()
-
-                    .build();
-            notification = notificationService.save(notification);
-        }
+//        String userId = "";
+//        if (notificationList.getAll()) {
+//
+//        }
+//
+//        List<String> deletedNotification = new ArrayList<>(List.of());
+//        for (String id : notificationList.getIds()) {
+//            Notification notification = notificationService.findById(id);
+//            if (notification == null) {
+//                deletedNotification.add(id);
+//            }
+//            notification = notification.toBuilder()
+//
+//                    .build();
+//            notification = notificationService.save(notification);
+//        }
         return ResponseEntity.ok("");
     }
 
@@ -58,7 +58,6 @@ public class NotificationController {
             @RequestBody Notification notification
     ) {
         // chỉ được update đối với những noti chưa được gửi
-
         return ResponseEntity.ok("");
     }
 

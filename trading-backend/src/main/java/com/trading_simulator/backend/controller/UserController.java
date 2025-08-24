@@ -80,20 +80,20 @@ public class UserController {
 ////            }
 //        }
 
-        Auth auth = authService.findById(updateUserRequest.getId());
-        if (auth == null) {
-            return ResponseEntity.ok("");
-        }
-        if (!auth.getEmail().trim().equals(updateUserRequest.getEmail())
-                && authService.existsByEmail(updateUserRequest.getEmail())
-        ) {
-            return ResponseEntity.ok("");
-        }
-        if (!auth.getUsername().trim().equals(updateUserRequest.getUsername())
-                && authService.existsByUsername(updateUserRequest.getUsername())
-        ) {
-            return ResponseEntity.ok("");
-        }
+//        Auth auth = authService.findById(updateUserRequest.getId());
+//        if (auth == null) {
+//            return ResponseEntity.ok("");
+//        }
+//        if (!auth.getEmail().trim().equals(updateUserRequest.getEmail())
+//                && authService.existsByEmail(updateUserRequest.getEmail())
+//        ) {
+//            return ResponseEntity.ok("");
+//        }
+//        if (!auth.getUsername().trim().equals(updateUserRequest.getUsername())
+//                && authService.existsByUsername(updateUserRequest.getUsername())
+//        ) {
+//            return ResponseEntity.ok("");
+//        }
 
 
         //

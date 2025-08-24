@@ -1,5 +1,7 @@
 package com.trading_simulator.backend.config.security;
 
+import com.trading_simulator.backend.domain.apipermission.ApiPermission;
+import com.trading_simulator.backend.domain.apipermission.ApiPermissionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -25,6 +27,16 @@ public class SecurityConfig {
     @Value("${VUE_URL}")
     private String VUE_URL;
 
+    private final ApiPermissionRepository apiPermissionRepository;
+
+    // Với các method = null, method = "*" hoặc method = "ALL" → quyền sẽ được áp dụng cho mọi HTTP Method
+    private HttpMethod resolveHttpMethod(String method) {
+        if (method == null || method.equalsIgnoreCase("ALL") || method.equals("*")) {
+            return null; // áp dụng cho mọi method
+        }
+        return HttpMethod.valueOf(method.toUpperCase());
+    }
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
@@ -49,17 +61,27 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable);
         http.cors(c -> c.configurationSource(corsConfigurationSource()));
         http.sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-
-//        http.authorizeHttpRequests(configure -> configure
-//                .requestMatchers("/ws/**").permitAll()
-//
-//                .requestMatchers(HttpMethod.GET, "/files/**").permitAll()
-//                .requestMatchers(HttpMethod.POST, "/files/**").permitAll()
-//                .requestMatchers(HttpMethod.PUT, "/files/**").permitAll()
-//                .requestMatchers(HttpMethod.DELETE, "/files/**").permitAll()
-//        );
-
         http.authorizeHttpRequests(configure -> configure.anyRequest().permitAll());
+//        http.authorizeHttpRequests(configure -> {
+//            List<ApiPermission> permissions = apiPermissionRepository.findAll();
+//            for (ApiPermission permission : permissions) {
+//                if (Boolean.TRUE.equals(permission.getEnabled())) {
+//                    HttpMethod method = resolveHttpMethod(permission.getMethod());
+//                    String[] roles = permission.getRoleIds()
+//                            .stream()
+//                            .map(r -> "ROLE_" + r.toUpperCase())
+//                            .toArray(String[]::new);
+//
+//                    if (method != null) {
+//                        configure.requestMatchers(method, permission.getPattern()).hasAnyAuthority(roles);
+//                    } else {
+//                        configure.requestMatchers(permission.getPattern()).hasAnyAuthority(roles);
+//                    }
+//                }
+//            }
+//            // Nếu không match → từ chối truy cập
+//            configure.anyRequest().denyAll();
+//        });
         http.headers(headers -> headers
                 .frameOptions(HeadersConfigurer.FrameOptionsConfig::disable)
                 .httpStrictTransportSecurity(HeadersConfigurer.HstsConfig::disable)
