@@ -1,7 +1,7 @@
 package com.trading_simulator.backend.controller;
 
-import com.trading_simulator.backend.domain.role.Role;
-import com.trading_simulator.backend.domain.role.RoleService;
+import com.trading_simulator.backend.object.entity.Role;
+import com.trading_simulator.backend.service.RoleService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -9,8 +9,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.time.Instant;
 
 @RestController
 @RequestMapping("/api/role")

@@ -1,11 +1,9 @@
 package com.trading_simulator.backend.object.dto.user;
 
-import com.trading_simulator.backend.domain.role.Role;
-import jakarta.validation.constraints.AssertTrue;
+import com.trading_simulator.backend.object.entity.Role;
 import jakarta.validation.constraints.PastOrPresent;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 

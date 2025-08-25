@@ -4,7 +4,7 @@ import com.trading_simulator.backend.object.dto.auth.ResetPasswordRequest;
 import com.trading_simulator.backend.object.dto.auth.SignInRequest;
 import com.trading_simulator.backend.object.dto.auth.SignUpRequest;
 import com.trading_simulator.backend.object.dto.user.UserInfo;
-import com.trading_simulator.backend.domain.auth.AuthService;
+import com.trading_simulator.backend.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -23,7 +23,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Tag(name = "Auth", description = "Các API xác thực tài khoản người dùng")
 public class AuthController {
-    private final AuthService authService;
+    private final UserService userService;
 
     @Operation(summary = "Đăng ký")
     @ApiResponses(value = {
@@ -33,7 +33,7 @@ public class AuthController {
     })
     @GetMapping("/sign-up")
     public ResponseEntity<?> signUp(@Valid @RequestBody SignUpRequest request) {
-        UserInfo userInfo = authService.signUp(request);
+        UserInfo userInfo = userService.signUp(request);
         return ResponseEntity.ok("User registered successfully");
     }
 
@@ -45,7 +45,7 @@ public class AuthController {
     })
     @GetMapping("/sign-in")
     public ResponseEntity<?> signIn(@Valid @RequestBody SignInRequest request) {
-        UserInfo userInfo = authService.signIn(request);
+        UserInfo userInfo = userService.signIn(request);
         return ResponseEntity.ok("");
     }
 
@@ -57,9 +57,11 @@ public class AuthController {
     })
     @GetMapping("/sign-out")
     public ResponseEntity<?> signOut(
-            HttpServletRequest request
+            HttpServletRequest request,
+            HttpServletResponse response,
+            @RequestParam Boolean all
     ) {
-        authService.signOut(request);
+        userService.signOut(request, response, all);
         return ResponseEntity.ok("");
     }
 
@@ -73,7 +75,7 @@ public class AuthController {
     public ResponseEntity<?> forgotPassword(
             @RequestParam String emailOrUsername
     ) {
-        authService.forgotPassword(emailOrUsername);
+        userService.forgotPassword(emailOrUsername);
         return ResponseEntity.ok("");
     }
 
@@ -87,7 +89,7 @@ public class AuthController {
     public ResponseEntity<?> checkResetPasswordToken(
             @RequestParam String token
     ) {
-        Boolean isValid = authService.checkResetPasswordToken(token);
+        Boolean isValid = userService.checkResetPasswordToken(token);
         return ResponseEntity.ok("");
     }
 
@@ -101,7 +103,7 @@ public class AuthController {
     public ResponseEntity<?> resetPassword(
             @RequestBody ResetPasswordRequest request
     ) {
-        authService.resetPassword(request);
+        userService.resetPassword(request);
         return ResponseEntity.ok("");
     }
 
@@ -113,7 +115,7 @@ public class AuthController {
     })
     @GetMapping("/check-email")
     public Boolean checkEmail(@RequestParam String email) {
-        return authService.existsByEmail(email);
+        return userService.existsByEmail(email);
     }
 
     @Operation(summary = "Kiểm tra tồn tại của username")
@@ -124,7 +126,7 @@ public class AuthController {
     })
     @GetMapping("/check-username")
     public Boolean checkUsername(@RequestParam String username) {
-        return authService.existsByUsername(username);
+        return userService.existsByUsername(username);
     }
 
     @Operation(summary = "Cấp lại Access Token thông qua Refresh Token")
@@ -138,7 +140,7 @@ public class AuthController {
             HttpServletRequest request,
             HttpServletResponse response
     ) {
-        authService.refreshToken(request, response);
+        userService.refreshToken(request, response);
         return ResponseEntity.ok(Map.of("message", "Access token refreshed"));
     }
 }

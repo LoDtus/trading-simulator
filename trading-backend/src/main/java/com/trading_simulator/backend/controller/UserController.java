@@ -1,8 +1,6 @@
 package com.trading_simulator.backend.controller;
 
-import com.trading_simulator.backend.domain.auth.Auth;
-import com.trading_simulator.backend.domain.auth.AuthService;
-import com.trading_simulator.backend.domain.user.UserService;
+import com.trading_simulator.backend.service.UserService;
 import com.trading_simulator.backend.object.dto.user.UpdateUserRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -28,7 +26,6 @@ import java.util.List;
 @RequiredArgsConstructor
 @Tag(name = "User", description = "Các API tương tác với thông tin cá nhân của người dùng")
 public class UserController {
-    private final AuthService authService;
     private final UserService userService;
 
     @Operation(
@@ -72,7 +69,7 @@ public class UserController {
     ) {
 //        String id = ""; // get from request
 //        if (!id.equals(updateUserRequest.getId())) {
-//            Auth auth = authService.findById(id);
+//            Auth auth = userService.findById(id);
 //
 //            // nếu id người gửi khác id trong update thì chỉ có admin được phép cập nhật thôi
 ////            if (!auth.getRole().equals("ROLE_ADMIN")) {
@@ -80,17 +77,17 @@ public class UserController {
 ////            }
 //        }
 
-//        Auth auth = authService.findById(updateUserRequest.getId());
+//        Auth auth = userService.findById(updateUserRequest.getId());
 //        if (auth == null) {
 //            return ResponseEntity.ok("");
 //        }
 //        if (!auth.getEmail().trim().equals(updateUserRequest.getEmail())
-//                && authService.existsByEmail(updateUserRequest.getEmail())
+//                && userService.existsByEmail(updateUserRequest.getEmail())
 //        ) {
 //            return ResponseEntity.ok("");
 //        }
 //        if (!auth.getUsername().trim().equals(updateUserRequest.getUsername())
-//                && authService.existsByUsername(updateUserRequest.getUsername())
+//                && userService.existsByUsername(updateUserRequest.getUsername())
 //        ) {
 //            return ResponseEntity.ok("");
 //        }

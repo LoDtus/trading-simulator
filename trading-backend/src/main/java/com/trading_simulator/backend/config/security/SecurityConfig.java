@@ -1,7 +1,6 @@
 package com.trading_simulator.backend.config.security;
 
-import com.trading_simulator.backend.domain.apipermission.ApiPermission;
-import com.trading_simulator.backend.domain.apipermission.ApiPermissionRepository;
+import com.trading_simulator.backend.object.entity.ApiPermissionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

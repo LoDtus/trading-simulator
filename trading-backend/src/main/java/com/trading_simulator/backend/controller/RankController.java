@@ -1,6 +1,6 @@
 package com.trading_simulator.backend.controller;
 
-import com.trading_simulator.backend.domain.rank.RankService;
+import com.trading_simulator.backend.service.RankService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

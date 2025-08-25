@@ -1,11 +1,11 @@
-package com.trading_simulator.backend.object.dto.user;
+package com.trading_simulator.backend.object.entity;
 
-import com.trading_simulator.backend.object.entity.Rank;
-import com.trading_simulator.backend.object.entity.Role;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.Instant;
 import java.util.List;
@@ -14,18 +14,14 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
-public class UserInfo {
+@Document(collection = "user")
+public class User {
+    @Id
     private String id;
-    private String email;
-    private String username;
-    private Role role;
-
     private String image;
     private Instant status;
     private String bio;
-    private List<String> address;
     private Instant dateOfBirth;
+    private List<String> address; // [nation, city]
     private Instant createdAt;
-
-    private Rank rank;
 }

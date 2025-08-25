@@ -1,16 +1,13 @@
 package com.trading_simulator.backend.controller;
 
-import com.trading_simulator.backend.common.enums.ScenarioStatus;
-import com.trading_simulator.backend.domain.auth.Auth;
-import com.trading_simulator.backend.domain.scenario.Scenario;
-import com.trading_simulator.backend.domain.auth.AuthService;
-import com.trading_simulator.backend.domain.scenario.ScenarioService;
+import com.trading_simulator.backend.object.entity.Scenario;
+import com.trading_simulator.backend.service.UserService;
+import com.trading_simulator.backend.service.ScenarioService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.Instant;
 import java.util.List;
 
 @RestController
@@ -18,7 +15,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Tag(name = "Scenario", description = "Các API tương tác với kịch bản giao dịch")
 public class ScenarioController {
-    private final AuthService authService;
+    private final UserService userService;
     private final ScenarioService scenarioService;
 
     @PostMapping("/add")
