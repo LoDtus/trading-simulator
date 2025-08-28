@@ -5,7 +5,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/support")
@@ -25,6 +27,7 @@ public class SupportController {
 
     @PostMapping("/add-topic")
     public ResponseEntity<?> addTopic() {
+
         return ResponseEntity.ok("");
     }
 
@@ -33,12 +36,12 @@ public class SupportController {
         return ResponseEntity.ok("");
     }
 
-    @PutMapping("/update")
+    @PutMapping("/update-topic")
     public ResponseEntity<?> updateTopic() {
         return ResponseEntity.ok("");
     }
 
-    @PostMapping("/delete")
+    @PostMapping("/delete-topics")
     public ResponseEntity<?> deleteTopics(@RequestParam List<String> ids) {
         return ResponseEntity.ok("");
     }

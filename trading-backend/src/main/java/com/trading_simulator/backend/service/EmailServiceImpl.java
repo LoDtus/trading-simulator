@@ -1,6 +1,6 @@
 package com.trading_simulator.backend.service;
 
-import com.trading_simulator.backend.object.entity.Auth;
+import com.trading_simulator.backend.object.entity.User;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +29,7 @@ public class EmailServiceImpl implements EmailService {
 
     @Async
     @Override
-    public Boolean sendEmailVerification(Auth auth, String verificationUrl) {
+    public Boolean sendEmailVerification(User user, String verificationUrl) {
         try {
             MimeMessage message = javaMailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, StandardCharsets.UTF_8.name());
@@ -41,7 +41,7 @@ public class EmailServiceImpl implements EmailService {
             String html = templateEngine.process("verification-email", context);
 
             // Send email
-            helper.setTo(auth.getEmail());
+            helper.setTo(user.getEmail());
             helper.setText(html, true);
             helper.setSubject("Verification email");
             helper.setFrom(sender);
@@ -56,7 +56,7 @@ public class EmailServiceImpl implements EmailService {
 
     @Async
     @Override
-    public Boolean sendResetPasswordEmail(Auth auth, String username, String resetPasswordUrl) {
+    public Boolean sendResetPasswordEmail(User user, String username, String resetPasswordUrl) {
         try {
             MimeMessage message = javaMailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, StandardCharsets.UTF_8.name());
@@ -70,7 +70,7 @@ public class EmailServiceImpl implements EmailService {
             String html = templateEngine.process("reset-password-email", context);
 
             // Send email
-            helper.setTo(auth.getEmail());
+            helper.setTo(user.getEmail());
             helper.setText(html, true);
             helper.setSubject("Reset password");
             helper.setFrom(sender);

@@ -2,8 +2,7 @@ package com.trading_simulator.backend.service;
 
 import com.trading_simulator.backend.config.exception.NotFoundException;
 import com.trading_simulator.backend.object.dto.scenario.UpdateScenario;
-import com.trading_simulator.backend.object.entity.Auth;
-import com.trading_simulator.backend.object.entity.AuthRepository;
+import com.trading_simulator.backend.object.entity.UserRepository;
 import com.trading_simulator.backend.object.entity.Scenario;
 import com.trading_simulator.backend.object.entity.ScenarioRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +15,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ScenarioServiceImpl implements ScenarioService {
     private final ScenarioRepository scenarioRepository;
-    private final AuthRepository authRepository;
+    private final UserRepository userRepository;
 
     @Override
     public List<Scenario> getScenarios() {
@@ -25,7 +24,7 @@ public class ScenarioServiceImpl implements ScenarioService {
 
     @Override
     public Scenario addScenario(Scenario scenario) {
-        if (!authRepository.existsById(scenario.getOwner())) {
+        if (!userRepository.existsById(scenario.getOwner())) {
             throw new NotFoundException("User not found");
         }
 

@@ -16,8 +16,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
-
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
@@ -31,7 +29,7 @@ public class AuthController {
             @ApiResponse(responseCode = "404", description = "Email đã tồn tại"),
             @ApiResponse(responseCode = "404", description = "Tên đăng nhập đã tồn tại")
     })
-    @GetMapping("/sign-up")
+    @PostMapping("/sign-up")
     public ResponseEntity<?> signUp(@Valid @RequestBody SignUpRequest request) {
         UserInfo userInfo = userService.signUp(request);
         return ResponseEntity.ok("User registered successfully");
@@ -43,10 +41,11 @@ public class AuthController {
             @ApiResponse(responseCode = "404", description = "Email đã tồn tại"),
             @ApiResponse(responseCode = "404", description = "Tên đăng nhập đã tồn tại")
     })
-    @GetMapping("/sign-in")
-    public ResponseEntity<?> signIn(@Valid @RequestBody SignInRequest request) {
-        UserInfo userInfo = userService.signIn(request);
-        return ResponseEntity.ok("");
+    @PostMapping("/sign-in")
+//    public ResponseEntity<?> signIn(@Valid @RequestBody SignInRequest request) {
+    public ResponseEntity<?> signIn() {
+//        UserInfo userInfo = userService.signIn(request);
+        return ResponseEntity.ok("Oke");
     }
 
     @Operation(summary = "Đăng xuất")
@@ -99,11 +98,12 @@ public class AuthController {
             @ApiResponse(responseCode = "404", description = "Email đã tồn tại"),
             @ApiResponse(responseCode = "404", description = "Tên đăng nhập đã tồn tại")
     })
-    @GetMapping("/reset-password")
+    @PostMapping("/reset-password")
     public ResponseEntity<?> resetPassword(
             @RequestBody ResetPasswordRequest request
     ) {
         userService.resetPassword(request);
+
         return ResponseEntity.ok("");
     }
 
@@ -127,20 +127,5 @@ public class AuthController {
     @GetMapping("/check-username")
     public Boolean checkUsername(@RequestParam String username) {
         return userService.existsByUsername(username);
-    }
-
-    @Operation(summary = "Cấp lại Access Token thông qua Refresh Token")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Thành công"),
-            @ApiResponse(responseCode = "404", description = "Email đã tồn tại"),
-            @ApiResponse(responseCode = "404", description = "Tên đăng nhập đã tồn tại")
-    })
-    @PostMapping("/refresh-token")
-    public ResponseEntity<?> refreshToken(
-            HttpServletRequest request,
-            HttpServletResponse response
-    ) {
-        userService.refreshToken(request, response);
-        return ResponseEntity.ok(Map.of("message", "Access token refreshed"));
     }
 }

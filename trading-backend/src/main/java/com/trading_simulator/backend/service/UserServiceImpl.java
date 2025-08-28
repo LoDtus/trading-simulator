@@ -1,6 +1,6 @@
 package com.trading_simulator.backend.service;
 
-import com.trading_simulator.backend.common.util.CommonUtil;
+import com.trading_simulator.backend.common.util.CommonUtils;
 import com.trading_simulator.backend.config.exception.BusinessException;
 import com.trading_simulator.backend.config.exception.NotFoundException;
 import com.trading_simulator.backend.object.dto.user.UpdateUserRequest;
@@ -23,8 +23,8 @@ import java.util.Objects;
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-    private final AuthRepository authRepository;
     private final UserRepository userRepository;
+    private final ProfileRepository profileRepository;
     private final ResetPasswordTokenRepository resetPasswordTokenRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final JwtService jwtService;
@@ -37,14 +37,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserInfo signUp(SignUpRequest request) {
-        if (authRepository.existsByEmail(request.getEmail())) {
+        if (userRepository.existsByEmail(request.getEmail())) {
             throw new BusinessException("Email already exists", "EMAIL_EXISTS");
         }
-        if (authRepository.existsByUsername(request.getUsername())) {
+        if (userRepository.existsByUsername(request.getUsername())) {
             throw new BusinessException("Username already exists", "USERNAME_EXISTS");
         }
 
-        Auth auth = Auth.builder()
+        User user = User.builder()
                 .id(null)
                 .email(request.getEmail())
                 .username(request.getUsername())
@@ -52,15 +52,15 @@ public class UserServiceImpl implements UserService {
 //                .role()
                 .active(true)
                 .build();
-        auth = authRepository.save(auth);
+        user = userRepository.save(user);
 
-        User user = User.builder()
-                .id(auth.getId())
+        Profile profile = Profile.builder()
+                .id(user.getId())
                 .dateOfBirth(request.getDateOfBirth())
                 .address(List.of(request.getNation(), request.getCity()))
                 .createdAt(Instant.now())
                 .build();
-        user = userRepository.save(user);
+        profile = profileRepository.save(profile);
 
         return UserInfo.builder()
 
@@ -69,30 +69,30 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserInfo signIn(SignInRequest request) {
-        Auth auth = authRepository.findByEmailOrUsername(request.getEmailOrUsername())
+        User user = userRepository.findByEmailOrUsername(request.getEmailOrUsername())
                 .orElseThrow(() -> new BusinessException("Invalid credentials", "INVALID_CREDENTIALS"));
 
         // Check password
-        if (request.getPassword().equals(auth.getPassword())) {
+        if (!Objects.equals(request.getPassword(), user.getPassword())) {
             throw new BusinessException("Invalid credentials", "INVALID_CREDENTIALS");
         }
 
         // Lấy User
-        User user = userRepository.findById(auth.getId())
+        Profile profile = profileRepository.findById(user.getId())
                 .orElseThrow(() -> new NotFoundException("User profile not found"));
 
         return UserInfo.builder()
-                .id(auth.getId())
-                .email(auth.getEmail())
-                .username(auth.getUsername())
-                .role(auth.getRole())
+                .id(user.getId())
+                .email(user.getEmail())
+                .username(user.getUsername())
+                .role(user.getRole())
 
-                .image(user.getImage())
+                .image(profile.getImage())
                 .status(null)
-                .bio(user.getBio())
-                .address(user.getAddress())
-                .dateOfBirth(user.getDateOfBirth())
-                .createdAt(user.getCreatedAt())
+                .bio(profile.getBio())
+                .address(profile.getAddress())
+                .dateOfBirth(profile.getDateOfBirth())
+                .createdAt(profile.getCreatedAt())
 
                 .rank(null)
                 .build();
@@ -104,7 +104,7 @@ public class UserServiceImpl implements UserService {
             HttpServletResponse response,
             Boolean all
     ) {
-        String accessToken = jwtService.extractTokenFromCookie(request, "accessToken");
+        String accessToken = jwtService.extractValueFromCookie(request, "accessToken");
         String userId = jwtService.extractValueFromToken(accessToken, "user");
         String sid = jwtService.extractValueFromToken(accessToken, "sid");
 
@@ -120,13 +120,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void forgotPassword(String emailOrUsername) {
-        Auth auth = authRepository.findByEmailOrUsername(emailOrUsername)
+        User user = userRepository.findByEmailOrUsername(emailOrUsername)
                 .orElseThrow(() -> new NotFoundException("User not found"));
 
-        String token = CommonUtil.generateUniqueUUID(resetPasswordTokenRepository);
+        String token = CommonUtils.generateUniqueUUID(resetPasswordTokenRepository);
         ResetPasswordToken resetPasswordToken = ResetPasswordToken.builder()
                 .token(token)
-                .owner(auth.getId())
+                .owner(user.getId())
                 .exp(Instant.now().plus(RESET_PASSWORD_TOKEN_EXPIRATION, ChronoUnit.MINUTES))
                 .build();
         resetPasswordToken = resetPasswordTokenRepository.save(resetPasswordToken);
@@ -146,9 +146,9 @@ public class UserServiceImpl implements UserService {
 
         // Kiểm tra còn tồn tại người dùng tương ứng hay không
         String userId = resetPasswordToken.getOwner();
-        Auth auth = authRepository.findById(userId)
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User not found"));
-        if (auth == null) {
+        if (user == null) {
             resetPasswordTokenRepository.deleteById(resetPasswordToken.getToken());
 
         }
@@ -174,9 +174,9 @@ public class UserServiceImpl implements UserService {
 
         // Kiểm tra còn tồn tại người dùng tương ứng hay không
         String userId = resetPasswordToken.getOwner();
-        Auth auth = authRepository.findById(userId)
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User not found"));
-        if (auth == null) {
+        if (user == null) {
             resetPasswordTokenRepository.deleteById(resetPasswordToken.getToken());
 
         }
@@ -189,20 +189,20 @@ public class UserServiceImpl implements UserService {
 
         // Kiểm tra ký tự trong password trước khi lưu
 
-        auth = auth.toBuilder()
+        user = user.toBuilder()
                 .password(newPassword)
                 .build();
-        auth = authRepository.save(auth);
+        user = userRepository.save(user);
     }
 
     @Override
     public Boolean existsByEmail(String email) {
-        return authRepository.existsByEmail(email);
+        return userRepository.existsByEmail(email);
     }
 
     @Override
     public Boolean existsByUsername(String username) {
-        return authRepository.existsByUsername(username);
+        return userRepository.existsByUsername(username);
     }
 
     @Override
@@ -243,20 +243,20 @@ public class UserServiceImpl implements UserService {
             HttpServletRequest request,
             UpdateUserRequest updateUserRequest
     ) {
-        if (!authRepository.existsById(updateUserRequest.getId())) {
+        if (!userRepository.existsById(updateUserRequest.getId())) {
             throw new NotFoundException("User not found");
         }
 
         // Kiểm tra tồn tại email, username, ký tự trong email, username
 
         // Chỉ cho phép chính người dùng hiện tại hoặc admin có quyền cập nhật thông tin
-        String accessToken = jwtService.extractTokenFromCookie(request, "accessToken");
+        String accessToken = jwtService.extractValueFromCookie(request, "accessToken");
         String userId = jwtService.extractValueFromToken(accessToken, "user");
 
-        List<Auth> users = authRepository.findByRoleId("ROLE_ADMIN");
-        for (Auth user : users) {
-            if (!userId.equals(updateUserRequest.getId())
-                && !userId.equals(user.getId())
+        List<User> users = userRepository.findByRoleId("ROLE_ADMIN");
+        for (User user : users) {
+            if (!Objects.equals(userId, updateUserRequest.getId())
+                && !Objects.equals(userId, user.getId())
             ) {
                 throw new BusinessException("User does not have permission", "ACCESS_DENIED");
             }

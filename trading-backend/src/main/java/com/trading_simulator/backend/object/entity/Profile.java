@@ -8,16 +8,20 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.Instant;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
-@Document(collection = "refresh_token")
-public class RefreshToken {
+@Document(collection = "profile")
+public class Profile {
     @Id
-    private String token;
-    private String owner;
-    private String deviceFingerprint;
-    private Instant exp;
+    private String id;
+    private String image;
+    private Instant status;
+    private String bio;
+    private Instant dateOfBirth;
+    private List<String> address; // [nation, city]
+    private Instant createdAt;
 }

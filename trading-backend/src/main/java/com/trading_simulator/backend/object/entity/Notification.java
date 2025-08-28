@@ -24,4 +24,6 @@ public class Notification {
     private List<String> read;
 
     private Instant createdAt;
+    private Instant updatedAt;
+    private Instant sendAt;
 }
