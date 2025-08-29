@@ -1,6 +1,8 @@
 package com.trading_simulator.backend.object.entity;
 
 import com.trading_simulator.backend.common.enums.SupportTopicType;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,6 +23,8 @@ public class SupportTopic {
     private String owner;
     private String title;
     private SupportTopicType type;
+
+    @Min(0) @Max(50)
     private Integer pin;
 
     private Instant createdAt;

@@ -1,5 +1,7 @@
 package com.trading_simulator.backend.object.entity;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,10 +19,14 @@ public class ApiPermission {
     @Id
     private String id;
 
+    @NotBlank
     @Indexed(unique = true)
     private String pattern;
+
     private String method;
     private List<String> roleIds;
     private String description;
+
+    @NotNull
     private Boolean enabled;
 }

@@ -1,5 +1,7 @@
 package com.trading_simulator.backend.object.entity;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,7 +19,11 @@ import java.time.Instant;
 public class RefreshToken {
     @Id
     private String token;
+
+    @NotBlank
     private String owner;
     private String deviceFingerprint;
+
+    @NotNull
     private Instant exp;
 }

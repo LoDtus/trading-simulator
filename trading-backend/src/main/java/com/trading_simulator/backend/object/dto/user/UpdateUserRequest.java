@@ -1,6 +1,8 @@
 package com.trading_simulator.backend.object.dto.user;
 
 import com.trading_simulator.backend.object.entity.Role;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.PastOrPresent;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,6 +19,8 @@ import java.util.List;
 public class UpdateUserRequest {
     private String id;
     private String username;
+
+    @Email(message = "Email invalid")
     private String email;
     private String password;
     private Role role;
@@ -27,6 +31,6 @@ public class UpdateUserRequest {
     private String bio;
     private List<String> address;
 
-    @PastOrPresent
+    @Past(message = "Date of birth must be in the past")
     private Instant dateOfBirth;
 }

@@ -1,9 +1,7 @@
 package com.trading_simulator.backend.object.dto.auth;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -15,7 +13,7 @@ import java.time.Instant;
 public class SignUpRequest {
     @Schema(description = "Email người dùng", example = "example@mail.com")
     @NotBlank(message = "Email is required")
-    @Email(message = "Email not valid")
+    @Email(message = "Email invalid")
     private String email;
 
     @Schema(description = "Tên đăng nhập người dùng", example = "username")
@@ -33,6 +31,7 @@ public class SignUpRequest {
     private String city;
 
     @Schema(description = "Ngày sinh người dùng", example = "2000-01-30")
+    @Past
     private Instant dateOfBirth;
 
     @Schema(description = "Duy trì đăng nhập", example = "true")

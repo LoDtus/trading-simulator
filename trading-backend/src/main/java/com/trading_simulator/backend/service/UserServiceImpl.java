@@ -12,6 +12,8 @@ import com.trading_simulator.backend.object.dto.user.UserInfo;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Safelist;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -243,31 +245,57 @@ public class UserServiceImpl implements UserService {
             HttpServletRequest request,
             UpdateUserRequest updateUserRequest
     ) {
-        if (!userRepository.existsById(updateUserRequest.getId())) {
-            throw new NotFoundException("User not found");
-        }
+        // Kiểm tra tồn tại
+        User user = userRepository.findById(updateUserRequest.getId())
+                .orElseThrow(() -> new NotFoundException("User not found"));
+        Profile profile = profileRepository.findById(updateUserRequest.getId())
+                .orElseThrow(() -> new NotFoundException("User not found"));
 
         // Kiểm tra tồn tại email, username, ký tự trong email, username
 
         // Chỉ cho phép chính người dùng hiện tại hoặc admin có quyền cập nhật thông tin
         String accessToken = jwtService.extractValueFromCookie(request, "accessToken");
         String userId = jwtService.extractValueFromToken(accessToken, "user");
-
-        List<User> users = userRepository.findByRoleId("ROLE_ADMIN");
-        for (User user : users) {
-            if (!Objects.equals(userId, updateUserRequest.getId())
-                && !Objects.equals(userId, user.getId())
-            ) {
-                throw new BusinessException("User does not have permission", "ACCESS_DENIED");
-            }
+        if (!Objects.equals(updateUserRequest.getId(), userId)
+            && !Objects.equals(updateUserRequest.getRole().getId(), "ROLE_ADMIN")
+        ) {
+            throw new BusinessException("User does not have permission", "ACCESS_DENIED");
         }
 
-        // Lưu
+        // Lưu ảnh vào storage nếu có
+        if (updateUserRequest.getImage() != null) {
 
-        UserInfo userInfo = UserInfo.builder()
+        }
 
+        // Sanitize các thẻ html nếu có
+        String cleanBio = null;
+        if (!updateUserRequest.getBio().isBlank()) {
+            cleanBio = Jsoup.clean(updateUserRequest.getBio(), Safelist.basic());
+        }
+
+        // Lưu vào MongoDB
+        user = user.toBuilder()
+                .email("")
+                .username("")
+                .password(null)
+                .role(null)
+                .active(null)
                 .build();
-        return userInfo;
+        user = userRepository.save(user);
+
+        profile = profile.toBuilder()
+                .image(null)
+                .status(null)
+                .bio(cleanBio != null ? cleanBio : profile.getBio())
+                .dateOfBirth(null)
+                .address(null)
+                .updatedAt(Instant.now())
+                .build();
+        profile = profileRepository.save(profile);
+
+        return UserInfo.builder()
+                .bio(profile.getBio())
+                .build();
     }
 
     @Override

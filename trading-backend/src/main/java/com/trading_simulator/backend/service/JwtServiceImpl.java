@@ -38,7 +38,6 @@ import java.util.*;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-// giải quyết lại mà không cần phải kiểm tra tồn tại của auth, tránh việc mỗi 15p lại tìm auth rất mất tgian mà trong khi trong chính rt đã lưu owner rồi
 public class JwtServiceImpl implements JwtService {
     @Value("${SECRET_KEY}")
     private String SECRET_KEY;
@@ -74,6 +73,8 @@ public class JwtServiceImpl implements JwtService {
                 servletRequestAttributes.getRequest().setAttribute("expired", true);
             }
             return ex.getClaims().get(claimKey, nameClass);
+        } catch (JwtException ex) {
+            throw new BusinessException("Invalid token: " + ex.getMessage(), "INVALID_TOKEN");
         }
     }
 
@@ -87,17 +88,15 @@ public class JwtServiceImpl implements JwtService {
         if (request.getCookies() == null) {
             return null;
         }
-
-        for (Cookie cookie : request.getCookies()) {
-            if (Objects.equals(cookie.getName(), cookieName)) {
-                return cookie.getValue();
-            }
-        }
-        return null;
+        return Arrays.stream(request.getCookies())
+                .filter(cookie -> Objects.equals(cookie.getName(), cookieName))
+                .findFirst()
+                .map(Cookie::getValue)
+                .orElse(null);
     }
 
     @Override
-    public Boolean isTokenExpired(String token) { // fix
+    public Boolean isTokenExpired(String token) {
         try {
             Date expiration = Jwts.parserBuilder()
                     .setSigningKey(getSignInKey())
@@ -106,23 +105,18 @@ public class JwtServiceImpl implements JwtService {
                     .getBody()
                     .getExpiration();
             return expiration.before(new Date());
-        } catch (ExpiredJwtException ex) { // Token đã hết hạn
-            return true;
-        } catch (JwtException ex) { // Token không hợp lệ
+        } catch (JwtException ex) {
             return true;
         }
     }
 
     @Override
-    public Boolean isTokenValid(String token, UserDetails userDetails) {
-        String userId = extractValueFromToken(token, "user");
+    public Boolean isTokenValid(String token, String userId) {
         if (isTokenExpired(token)) {
             return false;
         }
-        if (userDetails instanceof User user) {
-            return (Objects.equals(userId, user.getId()));
-        }
-        return false;
+        String tokenUserId = extractValueFromToken(token, "user");
+        return Objects.equals(tokenUserId, userId);
     }
 
     @Override
@@ -134,7 +128,6 @@ public class JwtServiceImpl implements JwtService {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             byte[] hash = digest.digest(input.getBytes(StandardCharsets.UTF_8));
-
             StringBuilder hexString = new StringBuilder();
             for (byte b : hash) {
                 String hex = Integer.toHexString(0xff & b);
@@ -142,53 +135,37 @@ public class JwtServiceImpl implements JwtService {
                 hexString.append(hex);
             }
             return hexString.toString();
-
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException("SHA-256 not supported", e);
         }
     }
 
     @Override
-    public RefreshToken generateRefreshToken(
-            HttpServletRequest request,
-            String userId
-    ) {
-        if (!userRepository.existsById(userId)) {
-            throw new NotFoundException("User not found");
-        }
-
+    public RefreshToken generateRefreshToken(HttpServletRequest request, String userId) {
         RefreshToken refreshToken = RefreshToken.builder()
                 .token(CommonUtils.generateUniqueUUID(refreshTokenRepository))
                 .owner(userId)
                 .deviceFingerprint(generateDeviceFingerprint(request))
-//                .exp(Instant.now().plus(REFRESH_TOKEN_EXPIRATION, ChronoUnit.DAYS))
                 .exp(Instant.now().plus(REFRESH_TOKEN_EXPIRATION, ChronoUnit.MINUTES))
                 .build();
-        refreshToken = refreshTokenRepository.save(refreshToken);
-        return refreshToken;
+        return refreshTokenRepository.save(refreshToken);
     }
 
     @Override
     public String generateAccessToken(String userId) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("user", userId);
-
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(userId)
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(new Date().getTime() + Duration.ofMinutes(ACCESS_TOKEN_EXPIRATION).toMillis()))
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + Duration.ofMinutes(ACCESS_TOKEN_EXPIRATION).toMillis()))
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
     @Override
-    public void generateTokens(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            User user,
-            Boolean rememberMe
-    ) {
+    public void generateTokens(HttpServletRequest request, HttpServletResponse response, User user, Boolean rememberMe) {
         String accessToken = generateAccessToken(user.getId());
         ResponseCookie accessTokenCookie = ResponseCookie.from("accessToken", accessToken)
                 .httpOnly(true)
@@ -199,14 +176,13 @@ public class JwtServiceImpl implements JwtService {
                 .build();
         response.addHeader("Set-Cookie", accessTokenCookie.toString());
 
-        RefreshToken refreshToken = rememberMe ? generateRefreshToken(request, user.getId()) : null;
-        if (rememberMe && refreshToken != null) {
+        if (rememberMe) {
+            RefreshToken refreshToken = generateRefreshToken(request, user.getId());
             ResponseCookie sidCookie = ResponseCookie.from("sid", refreshToken.getToken())
                     .httpOnly(true)
                     .path("/")
                     .sameSite("Lax")
                     .secure(false)
-//                    .maxAge(Duration.ofDays(REFRESH_TOKEN_EXPIRATION).getSeconds())
                     .maxAge(Duration.ofMinutes(REFRESH_TOKEN_EXPIRATION).getSeconds())
                     .build();
             response.addHeader("Set-Cookie", sidCookie.toString());
@@ -214,33 +190,26 @@ public class JwtServiceImpl implements JwtService {
     }
 
     @Override
-    public String refreshAccessToken(
-        HttpServletRequest request,
-        HttpServletResponse response
-    ) {
+    public String refreshAccessToken(HttpServletRequest request, HttpServletResponse response) {
         String sid = extractValueFromCookie(request, "sid");
-        if (sid == null) { // ~ rememberMe = false
-            //sign out
-            throw new NotFoundException("Sid not found");
-        };
-
-        RefreshToken refreshToken = refreshTokenRepository.findById(sid).orElse(null);
-        if (refreshToken == null) {
+        if (sid == null) {
             // sign out
-
-            throw new NotFoundException("Refresh token not found");
+            throw new NotFoundException("Sid not found");
         }
+
+        RefreshToken refreshToken = refreshTokenRepository.findById(sid)
+                .orElseThrow(() -> {
+                    // sign out
+                    return new NotFoundException("Refresh token not found");
+                });
 
         String currentFingerprint = generateDeviceFingerprint(request);
-        if (
-                refreshToken.getExp().isBefore(Instant.now())
-                || !Objects.equals(refreshToken.getDeviceFingerprint(), currentFingerprint)
-        ) {
-            // sign out
-            throw new BusinessException("Refresh token expired", "REFRESH_TOKEN_EXPIRED");
+        if (refreshToken.getExp().isBefore(Instant.now()) || !Objects.equals(refreshToken.getDeviceFingerprint(), currentFingerprint)) {
+            refreshTokenRepository.delete(refreshToken); // Xóa refresh token không hợp lệ
+            // sign ou
+            throw new BusinessException("Refresh token expired or invalid device", "REFRESH_TOKEN_EXPIRED");
         }
 
-        // Refresh Token
         String newAccessToken = generateAccessToken(refreshToken.getOwner());
         ResponseCookie accessTokenCookie = ResponseCookie.from("accessToken", newAccessToken)
                 .httpOnly(true)
@@ -257,12 +226,13 @@ public class JwtServiceImpl implements JwtService {
     public void clearAllCookies(HttpServletRequest request, HttpServletResponse response) {
         if (request.getCookies() != null) {
             for (Cookie cookie : request.getCookies()) {
-                Cookie cookieToDelete = new Cookie(cookie.getName(), "");
-                cookieToDelete.setPath("/");
-                cookieToDelete.setMaxAge(0);
-                cookieToDelete.setHttpOnly(cookie.isHttpOnly());
-                cookieToDelete.setSecure(cookie.getSecure());
-                response.addCookie(cookieToDelete);
+                ResponseCookie cookieToDelete = ResponseCookie.from(cookie.getName(), "")
+                        .path("/")
+                        .maxAge(0)
+                        .httpOnly(true)
+                        .secure(false)
+                        .build();
+                response.addHeader("Set-Cookie", cookieToDelete.toString());
             }
         }
     }

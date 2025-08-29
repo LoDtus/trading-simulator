@@ -105,6 +105,7 @@ db.profile.insertMany([
         dateOfBirth: ISODate("1995-01-01T00:00:00Z"),
         address: ["Vietnam", "Hanoi"],
         createdAt: ISODate(),
+        updatedAt: ISODate(),
     },
     {
         _id: ObjectId("000000000000000000000002"),
@@ -114,6 +115,7 @@ db.profile.insertMany([
         dateOfBirth: ISODate("2003-09-15T00:00:00Z"),
         address: ["Vietnam", "Da Nang"],
         createdAt: ISODate(),
+        updatedAt: ISODate(),
     },
     {
         _id: ObjectId("000000000000000000000003"),
@@ -123,5 +125,6 @@ db.profile.insertMany([
         dateOfBirth: ISODate("2003-09-20T00:00:00Z"),
         address: ["Vietnam", "Ho Chi Minh City"],
         createdAt: ISODate(),
+        updatedAt: ISODate(),
     }
 ]);

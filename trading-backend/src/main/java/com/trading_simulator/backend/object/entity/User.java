@@ -35,7 +35,7 @@ public class User implements UserDetails {
 
     @Indexed(unique = true)
     @NotBlank(message = "Email is required")
-    @Email(message = "Email not valid")
+    @Email(message = "Email invalid")
     private String email; // Bắt buộc, username không cần nhập cũng được, nếu không có thì hệ thống sẽ tự tạo
 
     @Indexed(unique = true)

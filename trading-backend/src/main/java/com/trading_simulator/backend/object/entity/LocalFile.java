@@ -1,5 +1,10 @@
 package com.trading_simulator.backend.object.entity;
 
+import com.trading_simulator.backend.common.enums.InputType;
+import com.trading_simulator.backend.config.validation.ValidInput;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,10 +22,25 @@ import java.time.Instant;
 public class LocalFile {
     @Id
     private String id;
+
+    @NotBlank
     private String eventId;
+
+    @NotBlank
     private String owner;
+
+    @ValidInput(
+            type = InputType.COMMON_NAME,
+            message = "Tên file chi chấp nhận chữ latin, tượng hình, chữ số, emoji và các ký tự [] () - _ : , . |"
+    )
+    @NotBlank
     private String name;
+
+    @NotBlank
     private String url;
     private Long size;
+
+    @NotNull
+    @PastOrPresent(message = "The creation time cannot be in the future")
     private Instant createdAt;
 }

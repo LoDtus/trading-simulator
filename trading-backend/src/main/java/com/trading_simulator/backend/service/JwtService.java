@@ -12,7 +12,7 @@ public interface JwtService {
     String extractValueFromToken(String token, String key);
 
     Boolean isTokenExpired(String token);
-    Boolean isTokenValid(String token, UserDetails userDetails);
+    Boolean isTokenValid(String token, String userId);
 
     String generateDeviceFingerprint(HttpServletRequest request);
     RefreshToken generateRefreshToken(HttpServletRequest request, String userId);
