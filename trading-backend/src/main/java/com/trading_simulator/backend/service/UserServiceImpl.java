@@ -21,6 +21,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -70,16 +71,29 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserInfo signIn(SignInRequest request) {
-        User user = userRepository.findByEmailOrUsername(request.getEmailOrUsername())
+    public UserInfo signIn(
+            SignInRequest signInRequest,
+            HttpServletRequest request,
+            HttpServletResponse response
+    ) {
+        // Kiểm tra tồn tại của email hoặc username
+        User user = userRepository.findByEmailOrUsername(signInRequest.getEmailOrUsername())
                 .orElseThrow(() -> new BusinessException("Invalid credentials", "INVALID_CREDENTIALS"));
 
         // Check password
-        if (!Objects.equals(request.getPassword(), user.getPassword())) {
+        if (!Objects.equals(signInRequest.getPassword(), user.getPassword())) {
             throw new BusinessException("Invalid credentials", "INVALID_CREDENTIALS");
         }
 
-        // Lấy User
+        // Tạo token dựa theo rememberMe
+        jwtService.generateTokens(
+                request,
+                response,
+                user,
+                signInRequest.getRememberMe()
+        );
+
+        // Lấy profile
         Profile profile = profileRepository.findById(user.getId())
                 .orElseThrow(() -> new NotFoundException("User profile not found"));
 

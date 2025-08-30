@@ -16,7 +16,7 @@ public interface JwtService {
 
     String generateDeviceFingerprint(HttpServletRequest request);
     RefreshToken generateRefreshToken(HttpServletRequest request, String userId);
-    String generateAccessToken(String userId);
+    String generateAccessToken(String userId, boolean rememberMe);
 
     void generateTokens(HttpServletRequest request, HttpServletResponse response, User user, Boolean rememberMe);
     String refreshAccessToken(HttpServletRequest request, HttpServletResponse response);

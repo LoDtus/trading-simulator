@@ -1,7 +1,5 @@
 package com.trading_simulator.backend.object.entity;
 
-import com.trading_simulator.backend.common.enums.InputType;
-import com.trading_simulator.backend.config.validation.ValidInput;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;

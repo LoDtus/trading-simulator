@@ -1,6 +1,5 @@
 package com.trading_simulator.backend.config.validation;
 
-import com.trading_simulator.backend.common.enums.InputType;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 

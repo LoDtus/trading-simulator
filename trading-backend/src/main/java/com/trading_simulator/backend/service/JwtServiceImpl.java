@@ -152,21 +152,28 @@ public class JwtServiceImpl implements JwtService {
     }
 
     @Override
-    public String generateAccessToken(String userId) {
+    public String generateAccessToken(String userId, boolean rememberMe) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("user", userId);
-        return Jwts.builder()
+        JwtBuilder builder = Jwts.builder()
                 .setClaims(claims)
                 .setSubject(userId)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + Duration.ofMinutes(ACCESS_TOKEN_EXPIRATION).toMillis()))
-                .signWith(getSignInKey(), SignatureAlgorithm.HS256)
-                .compact();
+                .signWith(getSignInKey(), SignatureAlgorithm.HS256);
+
+        if (rememberMe) {
+            builder.setExpiration(new Date(System.currentTimeMillis() + Duration.ofMinutes(ACCESS_TOKEN_EXPIRATION).toMillis()));
+        } else {
+            // Đặt thời hạn dài hơn cho session cookie, ví dụ: 24 giờ
+            builder.setExpiration(new Date(System.currentTimeMillis() + Duration.ofHours(24).toMillis()));
+        }
+
+        return builder.compact();
     }
 
     @Override
     public void generateTokens(HttpServletRequest request, HttpServletResponse response, User user, Boolean rememberMe) {
-        String accessToken = generateAccessToken(user.getId());
+        String accessToken = generateAccessToken(user.getId(), rememberMe);
         ResponseCookie accessTokenCookie = ResponseCookie.from("accessToken", accessToken)
                 .httpOnly(true)
                 .path("/")
@@ -198,19 +205,17 @@ public class JwtServiceImpl implements JwtService {
         }
 
         RefreshToken refreshToken = refreshTokenRepository.findById(sid)
-                .orElseThrow(() -> {
-                    // sign out
-                    return new NotFoundException("Refresh token not found");
-                });
+                .orElseThrow(() -> new NotFoundException("Refresh token not found"));
 
+        // Xử lý nếu refresh token không hợp lệ
         String currentFingerprint = generateDeviceFingerprint(request);
         if (refreshToken.getExp().isBefore(Instant.now()) || !Objects.equals(refreshToken.getDeviceFingerprint(), currentFingerprint)) {
-            refreshTokenRepository.delete(refreshToken); // Xóa refresh token không hợp lệ
-            // sign ou
+            refreshTokenRepository.delete(refreshToken);
+            // sign out
             throw new BusinessException("Refresh token expired or invalid device", "REFRESH_TOKEN_EXPIRED");
         }
 
-        String newAccessToken = generateAccessToken(refreshToken.getOwner());
+        String newAccessToken = generateAccessToken(refreshToken.getOwner(), true);
         ResponseCookie accessTokenCookie = ResponseCookie.from("accessToken", newAccessToken)
                 .httpOnly(true)
                 .path("/")

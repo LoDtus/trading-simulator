@@ -12,7 +12,7 @@ import java.util.List;
 
 public interface UserService {
     UserInfo signUp(SignUpRequest request);
-    UserInfo signIn(SignInRequest request);
+    UserInfo signIn(SignInRequest signInRequest, HttpServletRequest request, HttpServletResponse response);
     void signOut(HttpServletRequest request, HttpServletResponse response, Boolean all);
     void forgotPassword(String emailOrUsername);
     Boolean checkResetPasswordToken(String token);

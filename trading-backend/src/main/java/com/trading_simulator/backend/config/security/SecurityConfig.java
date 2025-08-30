@@ -20,6 +20,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
 import java.util.List;
 
 @Configuration
@@ -69,41 +71,45 @@ public class SecurityConfig {
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         http.authenticationProvider(authenticationProvider);
 
-        http.authorizeHttpRequests(configure -> configure.anyRequest().permitAll());
-//        http.authorizeHttpRequests(configure -> {
-//            List<ApiPermission> permissions = apiPermissionRepository.findByEnabledTrue();
-//            for (ApiPermission permission : permissions) {
-//                if (Boolean.TRUE.equals(permission.getEnabled())) {
-//                    HttpMethod method = resolveHttpMethod(permission.getMethod());
-//                    String[] roles = permission.getRoleIds() == null || permission.getRoleIds().isEmpty()
-//                         ? null
-//                         : permission.getRoleIds().stream()
-//                             .map(r -> "ROLE_" + r.toUpperCase())
-//                             .toArray(String[]::new);
-//
-//                    if (method != null) {
-//                        if (roles == null) {
-//                            configure.requestMatchers(method, permission.getPattern()).permitAll();
-//                        } else {
-//                            configure.requestMatchers(method, permission.getPattern()).hasAnyAuthority(roles);
-//                        }
-//                    } else {
-//                        if (roles == null) {
-//                            configure.requestMatchers(permission.getPattern()).permitAll();
-//                        } else {
-//                            configure.requestMatchers(permission.getPattern()).hasAnyAuthority(roles);
-//                        }
-//                    }
-//                }
-//            }
-//            // Nếu không match → từ chối truy cập
-//            configure.anyRequest().denyAll();
-//        });
+//        http.authorizeHttpRequests(configure -> configure.anyRequest().permitAll());
+        http.authorizeHttpRequests(configure -> {
+            List<ApiPermission> permissions = apiPermissionRepository.findByEnabledTrue();
+            System.out.println("permissions");
+            System.out.println(permissions);
+
+            for (ApiPermission permission : permissions) {
+                if (Boolean.TRUE.equals(permission.getEnabled())) {
+                    HttpMethod method = resolveHttpMethod(permission.getMethod());
+                    String[] roles = permission.getRoleIds() == null || permission.getRoleIds().isEmpty()
+                         ? null
+                         : permission.getRoleIds().stream()
+                             .map(r -> "ROLE_" + r.toUpperCase())
+                             .toArray(String[]::new);
+
+                    System.out.println(Arrays.toString(roles));
+
+                    if (method != null) {
+                        if (roles == null) {
+                            configure.requestMatchers(method, permission.getPattern()).permitAll();
+                        } else {
+                            configure.requestMatchers(method, permission.getPattern()).hasAnyAuthority(roles);
+                        }
+                    } else {
+                        if (roles == null) {
+                            configure.requestMatchers(permission.getPattern()).permitAll();
+                        } else {
+                            configure.requestMatchers(permission.getPattern()).hasAnyAuthority(roles);
+                        }
+                    }
+                }
+            }
+            // Nếu không match → từ chối truy cập
+            configure.anyRequest().denyAll();
+        });
         http.headers(headers -> headers
                 .frameOptions(HeadersConfigurer.FrameOptionsConfig::disable)
                 .httpStrictTransportSecurity(HeadersConfigurer.HstsConfig::disable)
         );
-
         return http.build();
     }
 }

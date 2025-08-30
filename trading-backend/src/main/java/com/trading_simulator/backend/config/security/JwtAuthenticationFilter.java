@@ -1,7 +1,6 @@
 package com.trading_simulator.backend.config.security;
 
 import com.trading_simulator.backend.common.util.CommonUtils;
-import com.trading_simulator.backend.config.exception.BusinessException;
 import com.trading_simulator.backend.object.entity.*;
 import com.trading_simulator.backend.service.JwtService;
 import jakarta.annotation.PostConstruct;
@@ -27,7 +26,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
-    private final UserRepository authRepository;
+    private final UserRepository userRepository;
     private final UserDetailsService userDetailsService;
     private final RefreshTokenRepository refreshTokenRepository;
     private final ApiPermissionRepository apiPermissionRepository;
@@ -97,7 +96,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         try {
             String newAccessToken = jwtService.refreshAccessToken(request, response);
-            User user = authRepository.findById(refreshToken.getOwner())
+            User user = userRepository.findById(refreshToken.getOwner())
                     .orElseThrow(() -> new UsernameNotFoundException("User not found"));
             UserDetails userDetails = userDetailsService.loadUserByUsername(user.getEmail());
             if (!userDetails.isEnabled()) {
@@ -146,8 +145,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 return;
             }
 
-            User user = authRepository.findById(userId)
+            System.out.println(userId);
+            User user = userRepository.findById(userId)
                     .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+            System.out.println(user);
             UserDetails userDetails = userDetailsService.loadUserByUsername(user.getEmail());
             if (!userDetails.isEnabled()) {
                 CommonUtils.sendErrorResponse(

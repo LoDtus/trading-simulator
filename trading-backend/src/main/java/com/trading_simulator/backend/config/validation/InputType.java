@@ -1,4 +1,4 @@
-package com.trading_simulator.backend.common.enums;
+package com.trading_simulator.backend.config.validation;
 
 public enum InputType {
     PLAIN_TEXT,
@@ -6,4 +6,5 @@ public enum InputType {
     COMMON_NAME,
     FULL_NAME,
     LATIN_ALNUM,
+    PASSWORD,
 }

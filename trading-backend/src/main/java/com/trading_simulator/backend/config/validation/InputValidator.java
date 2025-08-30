@@ -1,10 +1,7 @@
 package com.trading_simulator.backend.config.validation;
 
-import com.trading_simulator.backend.common.enums.InputType;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
-import org.jsoup.Jsoup;
-import org.jsoup.safety.Safelist;
 
 import java.util.regex.Pattern;
 
@@ -21,6 +18,8 @@ public class InputValidator implements ConstraintValidator<ValidInput, String> {
     private static final Pattern FULL_NAME_PATTERN = Pattern.compile("^[\\p{L}\\p{N}\\s\\p{So}\\[\\]\\(\\)\\-_\\|]*$");
     // LATIN_ALNUM: chỉ chấp nhận chữ latin và số
     private static final Pattern LATIN_ALNUM_PATTERN = Pattern.compile("^[A-Za-z0-9]*$");
+    // PASSWORD: cho phép mọi ký tự, càng đa dạng càng tốt. Yêu cầu tối thiểu 3 ký tự với ít nhất 1 ký tự viết hoa, 1 ký tự viết thường, 1 chữ số
+    private static final Pattern PASSWORD_PATTERN = Pattern.compile("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{3,}$");
 
     @Override
     public void initialize(ValidInput constraintAnnotation) {
@@ -36,6 +35,7 @@ public class InputValidator implements ConstraintValidator<ValidInput, String> {
             case COMMON_NAME -> COMMON_NAME_PATTERN.matcher(value).matches();
             case FULL_NAME -> FULL_NAME_PATTERN.matcher(value).matches();
             case LATIN_ALNUM -> LATIN_ALNUM_PATTERN.matcher(value).matches();
+            case PASSWORD -> PASSWORD_PATTERN.matcher(value).matches();
             default -> true;
         };
     }

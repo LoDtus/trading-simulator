@@ -4,7 +4,7 @@ import com.trading_simulator.backend.object.dto.auth.ResetPasswordRequest;
 import com.trading_simulator.backend.object.dto.auth.SignInRequest;
 import com.trading_simulator.backend.object.dto.auth.SignUpRequest;
 import com.trading_simulator.backend.object.dto.user.UserInfo;
-import com.trading_simulator.backend.object.entity.TradeRepository;
+import com.trading_simulator.backend.object.entity.*;
 import com.trading_simulator.backend.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -25,7 +25,8 @@ import java.time.Instant;
 @Tag(name = "Auth", description = "Các API xác thực tài khoản người dùng")
 public class AuthController {
     private final UserService userService;
-    private final TradeRepository tradeRepository;
+    private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
 
     @Operation(summary = "Đăng ký")
     @ApiResponses(value = {
@@ -46,8 +47,13 @@ public class AuthController {
             @ApiResponse(responseCode = "404", description = "Tên đăng nhập đã tồn tại")
     })
     @PostMapping("/sign-in")
-    public ResponseEntity<?> signIn(@Valid @RequestBody SignInRequest request) {
-        return ResponseEntity.ok("");
+    public ResponseEntity<?> signIn(
+            @Valid @RequestBody SignInRequest signInRequest,
+            HttpServletRequest request,
+            HttpServletResponse response
+    ) {
+        UserInfo userInfo = userService.signIn(signInRequest, request, response);
+        return ResponseEntity.ok(userInfo);
     }
 
     @Operation(summary = "Đăng xuất")
