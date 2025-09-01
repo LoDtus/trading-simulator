@@ -1,7 +1,10 @@
 db = db.getSiblingDB("trading-simulator-db");
+db.dropDatabase();
 
-db.api_permission.drop();
 db.api_permission.insertMany([
+    { "pattern": "/test/**", "method": "ALL", "roleIds": [], "description": "Api Test", "enabled": true },
+    { "pattern": "/ws/**", "method": "GET", "roleIds": [], "description": "Api kết nối WebSocket", "enabled": true },
+
     { "pattern": "/api/auth/sign-up", "method": "POST", "roleIds": [], "description": "Api đăng nhập", "enabled": true },
     { "pattern": "/api/auth/sign-in", "method": "POST", "roleIds": [], "description": "Api đăng ký", "enabled": true },
     { "pattern": "/api/auth/sign-out", "method": "GET", "roleIds": [], "description": "Api đăng xuất", "enabled": true },
@@ -40,7 +43,6 @@ db.api_permission.insertMany([
     { "pattern": "/api/support/delete-qa", "method": "DELETE", "roleIds": ["USER", "ADMIN"], "description": "Api xóa câu hỏi", "enabled": true }
 ]);
 
-db.role.drop();
 db.role.insertMany([
     {
         "_id": "ROLE_ADMIN",
@@ -58,7 +60,6 @@ db.role.insertMany([
     }
 ]);
 
-db.user.drop();
 db.user.insertMany([
     {
         "_id": ObjectId("000000000000000000000001"),
@@ -86,7 +87,6 @@ db.user.insertMany([
     }
 ]);
 
-db.profile.drop();
 db.profile.insertMany([
     {
         "_id": ObjectId("000000000000000000000001"),

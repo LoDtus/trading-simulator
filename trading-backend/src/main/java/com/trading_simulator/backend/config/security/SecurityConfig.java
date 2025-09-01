@@ -28,8 +28,11 @@ import java.util.List;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
-    @Value("${VUE_URL}")
-    private String VUE_URL;
+    @Value("${LOCALHOST_VUE_URL}")
+    private String LOCALHOST_VUE_URL;
+
+    @Value("${IPV4_VUE_URL}")
+    private String IPV4_VUE_URL;
 
     private final ApiPermissionRepository apiPermissionRepository;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
@@ -47,7 +50,10 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        configuration.setAllowedOrigins(List.of(VUE_URL));
+        configuration.setAllowedOrigins(List.of(
+                LOCALHOST_VUE_URL,
+                IPV4_VUE_URL
+        ));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowCredentials(true);
 
@@ -73,10 +79,11 @@ public class SecurityConfig {
 
 //        http.authorizeHttpRequests(configure -> configure.anyRequest().permitAll());
         http.authorizeHttpRequests(configure -> {
-            List<ApiPermission> permissions = apiPermissionRepository.findByEnabledTrue();
-            System.out.println("permissions");
-            System.out.println(permissions);
+            configure.requestMatchers("/ws/**").permitAll();
+            configure.requestMatchers("/user/**").permitAll();
+            configure.requestMatchers("/test/web-socket/**").permitAll();
 
+            List<ApiPermission> permissions = apiPermissionRepository.findByEnabledTrue();
             for (ApiPermission permission : permissions) {
                 if (Boolean.TRUE.equals(permission.getEnabled())) {
                     HttpMethod method = resolveHttpMethod(permission.getMethod());
@@ -85,8 +92,6 @@ public class SecurityConfig {
                          : permission.getRoleIds().stream()
                              .map(r -> "ROLE_" + r.toUpperCase())
                              .toArray(String[]::new);
-
-                    System.out.println(Arrays.toString(roles));
 
                     if (method != null) {
                         if (roles == null) {

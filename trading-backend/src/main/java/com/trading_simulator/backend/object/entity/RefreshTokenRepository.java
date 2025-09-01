@@ -4,4 +4,5 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 public interface RefreshTokenRepository extends MongoRepository<RefreshToken, String> {
     void deleteByOwner(String owner);
+    void deleteByOwnerAndDeviceFingerprint(String owner, String deviceFingerprint);
 }

@@ -19,6 +19,9 @@ import java.util.UUID;
 public class FileServiceImpl implements FileService {
     private final LocalFileRepository localFileRepository;
 
+    @Value("${BASE_URL}")
+    private String BASE_URL;
+
     @Value("${STORAGE_PATH}")
     private String STORAGE_PATH;
 

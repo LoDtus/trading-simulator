@@ -1,41 +1,36 @@
 package com.trading_simulator.backend.controller.test;
 
-import com.trading_simulator.backend.object.dto.test.TestData;
 import lombok.RequiredArgsConstructor;
-import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
-import org.springframework.messaging.simp.SimpMessageType;
+import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-@RestController
+import java.security.Principal;
+
+@Controller
 @RequestMapping("/test/web-socket")
 @RequiredArgsConstructor
 public class WebSocketController {
     private final SimpMessagingTemplate messagingTemplate;
 
-    @PostMapping("/send-single")
-    public Boolean sendSingle(@RequestBody TestData testData) {
+    @MessageMapping("/send-single")
+    public void sendSingle(com.trading_simulator.backend.controller.test.TestData testData, Principal principal) {
         String message = "Test Single";
+        String userId = principal != null ? principal.getName() : (testData.getUserId() != null ? testData.getUserId() : "user-123");
         System.out.println("Data Single: " + testData.getContent());
-
-        SimpMessageHeaderAccessor headerAccessor = SimpMessageHeaderAccessor.create(SimpMessageType.MESSAGE);
-        headerAccessor.setSessionId("user-123");
-        headerAccessor.setLeaveMutable(true);
+        System.out.println("Sending to userId=" + userId + " on /user/" + userId + "/test, principal=" + (principal != null ? principal.getName() : "null"));
 
         messagingTemplate.convertAndSendToUser(
-                "user-123",
+                userId,
                 "/test",
-                message,
-                headerAccessor.getMessageHeaders()
+                message
         );
-        return true;
     }
 
-    // gud
     @PostMapping("/send-global")
     public Boolean sendGlobal(@RequestBody TestData testData) {
         String message = "Test Global";
-
         System.out.println("Data Global: " + testData.getContent());
         messagingTemplate.convertAndSend(
                 "/public/test/123",

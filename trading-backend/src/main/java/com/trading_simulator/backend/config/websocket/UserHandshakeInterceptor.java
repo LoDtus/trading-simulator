@@ -12,20 +12,7 @@ public class UserHandshakeInterceptor implements HandshakeInterceptor {
     public boolean beforeHandshake(ServerHttpRequest request,
                                    ServerHttpResponse response,
                                    WebSocketHandler wsHandler,
-                                   Map<String, Object> attributes
-    ) throws Exception {
-//        if (request instanceof ServletServerHttpRequest servletRequest) {
-//            String userId = servletRequest.getServletRequest().getParameter("user");
-//            if (userId != null && !userId.isEmpty()) {
-//                attributes.put("userId", userId);
-//                System.out.println(">>> WebSocket Handshake OK. userId=" + userId);
-//            } else {
-//                System.out.println(">>> WebSocket Handshake FAILED. No userId found.");
-//                return false;
-//            }
-//        }
-//        return true; // cho phép handshake tiếp tục
-
+                                   Map<String, Object> attributes) throws Exception {
         if (request instanceof ServletServerHttpRequest servletRequest) {
             String userId = servletRequest.getServletRequest().getParameter("user");
             String sessionId = request.getHeaders().getFirst("sec-websocket-key");
@@ -45,8 +32,7 @@ public class UserHandshakeInterceptor implements HandshakeInterceptor {
     public void afterHandshake(ServerHttpRequest request,
                                ServerHttpResponse response,
                                WebSocketHandler wsHandler,
-                               Exception exception
-    ) {
+                               Exception exception) {
         if (exception != null) {
             System.out.println(">>> WebSocket Handshake error: " + exception.getMessage());
         }

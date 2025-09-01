@@ -142,6 +142,9 @@ public class JwtServiceImpl implements JwtService {
 
     @Override
     public RefreshToken generateRefreshToken(HttpServletRequest request, String userId) {
+        String deviceFingerprint = generateDeviceFingerprint(request);
+        refreshTokenRepository.deleteByOwnerAndDeviceFingerprint(userId, deviceFingerprint);
+
         RefreshToken refreshToken = RefreshToken.builder()
                 .token(CommonUtils.generateUniqueUUID(refreshTokenRepository))
                 .owner(userId)
@@ -160,14 +163,12 @@ public class JwtServiceImpl implements JwtService {
                 .setSubject(userId)
                 .setIssuedAt(new Date())
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256);
-
         if (rememberMe) {
             builder.setExpiration(new Date(System.currentTimeMillis() + Duration.ofMinutes(ACCESS_TOKEN_EXPIRATION).toMillis()));
         } else {
             // Đặt thời hạn dài hơn cho session cookie, ví dụ: 24 giờ
             builder.setExpiration(new Date(System.currentTimeMillis() + Duration.ofHours(24).toMillis()));
         }
-
         return builder.compact();
     }
 

@@ -74,8 +74,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain
     ) throws IOException, ServletException {
+        System.out.println("JwtFilter: Access token is missing");
         String sid = jwtService.extractValueFromCookie(request, "sid");
         if (sid == null || sid.isBlank()) {
+            System.out.println("JwtFilter: Refresh token id is missing");
             CommonUtils.sendErrorResponse(
                     response,
                     HttpServletResponse.SC_UNAUTHORIZED,
@@ -86,6 +88,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         RefreshToken refreshToken = refreshTokenRepository.findById(sid).orElse(null);
         if (refreshToken == null) {
+            System.out.println("JwtFilter: Refresh token not found");
             CommonUtils.sendErrorResponse(
                     response,
                     HttpServletResponse.SC_UNAUTHORIZED,
@@ -100,6 +103,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     .orElseThrow(() -> new UsernameNotFoundException("User not found"));
             UserDetails userDetails = userDetailsService.loadUserByUsername(user.getEmail());
             if (!userDetails.isEnabled()) {
+                System.out.println("JwtFilter: User is disabled");
                 CommonUtils.sendErrorResponse(
                         response,
                         HttpServletResponse.SC_UNAUTHORIZED,
@@ -110,6 +114,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             setAuthenticationInContext(request, userDetails);
             filterChain.doFilter(request, response);
         } catch (Exception e) {
+            System.out.println("JwtFilter: " + e.getMessage());
             CommonUtils.sendErrorResponse(
                     response,
                     HttpServletResponse.SC_UNAUTHORIZED,
@@ -128,6 +133,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         try {
             String userId = jwtService.extractValueFromToken(accessToken, "user");
             if (userId == null) {
+                System.out.println("JwtFilter: Missing user in token");
                 CommonUtils.sendErrorResponse(
                         response,
                         HttpServletResponse.SC_UNAUTHORIZED,
@@ -137,6 +143,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
 
             if (!jwtService.isTokenValid(accessToken, userId)) {
+                System.out.println("JwtFilter: Invalid access token");
                 CommonUtils.sendErrorResponse(
                         response,
                         HttpServletResponse.SC_UNAUTHORIZED,
@@ -145,12 +152,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 return;
             }
 
-            System.out.println(userId);
             User user = userRepository.findById(userId)
                     .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-            System.out.println(user);
             UserDetails userDetails = userDetailsService.loadUserByUsername(user.getEmail());
             if (!userDetails.isEnabled()) {
+                System.out.println("JwtFilter: User is disabled");
                 CommonUtils.sendErrorResponse(
                         response,
                         HttpServletResponse.SC_UNAUTHORIZED,
@@ -164,6 +170,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
             filterChain.doFilter(request, response);
         } catch (Exception e) {
+            System.out.println("JwtFilter - Authentication failed:" + e.getMessage());
             CommonUtils.sendErrorResponse(
                     response,
                     HttpServletResponse.SC_UNAUTHORIZED,

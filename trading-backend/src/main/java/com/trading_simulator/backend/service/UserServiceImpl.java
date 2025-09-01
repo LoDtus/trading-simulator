@@ -35,8 +35,11 @@ public class UserServiceImpl implements UserService {
     @Value("${RESET_PASSWORD_TOKEN_EXPIRATION}")
     private Integer RESET_PASSWORD_TOKEN_EXPIRATION;
 
-    @Value("${VUE_URL}")
-    private String VUE_URL;
+    @Value("${LOCALHOST_VUE_URL}")
+    private String LOCALHOST_VUE_URL;
+
+    @Value("${IPV4_VUE_URL}")
+    private String IPV4_VUE_URL;
 
     @Override
     public UserInfo signUp(SignUpRequest request) {
@@ -147,7 +150,7 @@ public class UserServiceImpl implements UserService {
                 .build();
         resetPasswordToken = resetPasswordTokenRepository.save(resetPasswordToken);
 
-        String resetPasswordUrl = VUE_URL + "/reset-password?token=" + token;
+        String resetPasswordUrl = LOCALHOST_VUE_URL + "/reset-password?token=" + token;
         // Gửi mail
     }
 
